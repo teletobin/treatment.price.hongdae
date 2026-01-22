@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>블리비 홍대 | 시술가격정리</title>
+
+  <!-- Noto Sans KR 폰트 로드 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff; 
+      --primary: #f06292; /* 좀 더 차분한 로즈 핑크 */
+      --primary-dark: #d81b60; 
+      --primary-light: #fce4ec;
+      --text: #333333;
+      --card-bg: #ffffff;
+      --border: rgba(240, 98, 146, 0.2);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+      --radius: 20px;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+      font-family: "Noto Sans KR", sans-serif !important;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 28px 20px;
+      text-align: center;
+      background: var(--primary-light); 
+      border-bottom: 2px solid rgba(240, 98, 146, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(240, 98, 146, 0.05);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #333333;
+      letter-spacing: -0.7px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .option-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 9px 16px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.04);
+      transition: all 0.2s ease;
+      color: var(--text);
+    }
+    .option-pill:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .option-pill input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
+
+    .actions { display: flex; gap: 10px; }
+
+    .btn {
+      border: none;
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    /* 차분한 로즈 핑크 톤으로 변경된 복사 버튼 */
+    .btn-copy {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px rgba(240, 98, 146, 0.2);
+    }
+    .btn-copy:hover { 
+      background: var(--primary-dark);
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 20px rgba(240, 98, 146, 0.25);
+    }
+    .btn-copy:active { transform: translateY(0); }
+
+    .btn-clear {
+      background: #fff;
+      color: #777;
+      border: 1px solid #eee;
+    }
+    .btn-clear:hover { background: #fafafa; color: #444; border-color: #ddd; }
+
+    .editor-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      position: relative;
+    }
+
+    /* 두 박스 사이의 화살표 도형 */
+    .connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      opacity: 0.6;
+    }
+    
+    .arrow-icon {
+      width: 0; 
+      height: 0; 
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-left: 18px solid var(--primary);
+    }
+
+    @media (max-width: 850px) {
+      .editor-wrapper { flex-direction: column; }
+      .editor-grid { grid-template-columns: 1fr; width: 100%; }
+      .connector { transform: rotate(90deg); padding: 10px 0; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+    .panel:focus-within { border-color: var(--primary); box-shadow: 0 12px 30px rgba(240, 98, 146, 0.1); }
+
+    .panel-header {
+      padding: 16px 20px;
+      background: #fff;
+      border-bottom: 1px solid #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title { font-size: 14px; font-weight: 700; color: #555; }
+    
+    .status-badge {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+      border: 1px solid rgba(240, 98, 146, 0.1);
+    }
+
+    textarea {
+      width: 100%;
+      height: 480px;
+      padding: 20px;
+      border: none;
+      resize: none;
+      font-size: 14px;
+      line-height: 1.8;
+      background: transparent;
+      outline: none;
+      color: var(--text);
+    }
+    
+    #output { background: #fdfdfd; color: #444; }
+
+    .panel-footer {
+      padding: 14px 20px;
+      font-size: 12px;
+      background: #fafafa;
+      border-top: 1px solid #f5f5f5;
+      color: #999;
+    }
+
+    /* 풋터 스타일 수정: 패널 바로 아래 위치 및 텍스트 크기 상향 */
+    footer {
+      padding: 20px 0;
+      text-align: center;
+      font-size: 13px; /* 텍스트 크기 상향 */
+      color: #9e9e9e;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #333;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>블리비 홍대점 시술명+가격 정리</h1>
+  </header>
+
+  <div class="container">
+    <div class="toolbar">
+      <div class="options">
+        <label class="option-pill">
+          <input type="checkbox" id="keepParens" checked>
+          <span>괄호 속 텍스트 유지</span>
+        </label>
+        <label class="option-pill">
+          <input type="checkbox" id="vatLine" checked>
+          <span>부가세 안내 포함</span>
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btnClear" class="btn btn-clear">CLEAR</button>
+        <button id="btnCopy" class="btn btn-copy">정리결과 복사</button>
+      </div>
+    </div>
+
+    <div class="editor-wrapper">
+      <section class="panel" style="flex: 1;">
+        <div class="panel-header">
+          <span class="panel-title">원본 텍스트</span>
+          <span id="inputStatus" class="status-badge">READY</span>
+        </div>
+        <textarea id="input" placeholder="웹사이트의 텍스트를 복사해서 이곳에 붙여넣으세요."></textarea>
+        <div class="panel-footer">
+          시술명과 가격이 포함된 텍스트를 넣어주세요.
+        </div>
+      </section>
+
+      <div class="connector">
+        <div class="arrow-icon"></div>
+      </div>
+
+      <section class="panel" style="flex: 1;">
+        <div class="panel-header">
+          <span class="panel-title">정리된 결과</span>
+          <span id="outputCount" class="status-badge">0건</span>
+        </div>
+        <textarea id="output" readonly placeholder="결과가 여기에 표시됩니다."></textarea>
+        <div class="panel-footer" id="msgBox">
+          대기 중
+        </div>
+      </section>
+    </div>
+
+    <!-- 풋터 위치를 container 내부, 패널 바로 아래로 이동 -->
+    <footer>
+      &copy; 2026. Designed & Developed by EUNBIN GA
+    </footer>
+  </div>
+
+  <div id="toast">텍스트 복사 완료</div>
+
+  <script>
+    const elInput = document.getElementById('input');
+    const elOutput = document.getElementById('output');
+    const elKeepParens = document.getElementById('keepParens');
+    const elVatLine = document.getElementById('vatLine');
+    const elStatus = document.getElementById('inputStatus');
+    const elCount = document.getElementById('outputCount');
+    const elMsg = document.getElementById('msgBox');
+    const elBtnCopy = document.getElementById('btnCopy');
+    const elBtnClear = document.getElementById('btnClear');
+    const elToast = document.getElementById('toast');
+
+    function cleanName(name, keepParens) {
+      let n = name;
+      if (!keepParens) {
+        n = n.replace(/\([^)]*\)/g, ""); 
+        n = n.replace(/\[[^\]]*\]/g, ""); 
+      }
+      return n.replace(/\s+/g, " ").trim();
+    }
+
+    function extractPrice(text) {
+      if (!text) return null;
+      const match = text.match(/(\d{1,3}(,\d{3})*|\d+)원/);
+      return match ? match[0] : null;
+    }
+
+    function process() {
+      const raw = elInput.value.trim();
+      const keepParens = elKeepParens.checked;
+      const useVat = elVatLine.checked;
+
+      if (!raw) {
+        elOutput.value = "";
+        elCount.textContent = "0건";
+        elStatus.textContent = "READY";
+        elMsg.textContent = "텍스트를 입력하면 자동으로 정리됩니다.";
+        return;
+      }
+
+      const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const results = [];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const currentLine = lines[i];
+        const priceInCurrent = extractPrice(currentLine);
+        
+        if (priceInCurrent) {
+          const namePart = currentLine.split(priceInCurrent)[0].trim();
+          if (namePart) {
+            results.push(`${cleanName(namePart, keepParens)} ${priceInCurrent}`);
+            continue;
+          }
+        }
+
+        const nextLine = lines[i + 1] || "";
+        const priceInNext = extractPrice(nextLine);
+
+        if (priceInNext) {
+          if (!/%|원|할인|이벤트/.test(currentLine)) {
+            results.push(`${cleanName(currentLine, keepParens)} ${priceInNext}`);
+            i++; 
+          }
+        }
+      }
+
+      let finalTxt = results.join('\n');
+      if (useVat && results.length > 0) {
+        finalTxt += "\n\n부가세 10% 별도입니다 😊";
+      }
+
+      elOutput.value = finalTxt;
+      elCount.textContent = results.length + "건";
+      elStatus.textContent = "DONE";
+      elMsg.textContent = results.length > 0 ? "정리가 완료되었습니다." : "가격을 찾을 수 없습니다.";
+    }
+
+    function showToast(msg) {
+      elToast.textContent = msg;
+      elToast.classList.add('show');
+      setTimeout(() => elToast.classList.remove('show'), 2000);
+    }
+
+    elBtnCopy.addEventListener('click', () => {
+      if (!elOutput.value) return;
+      elOutput.select();
+      try {
+        document.execCommand('copy');
+        showToast("정리 텍스트 복사완료");
+      } catch (err) {
+        showToast("복사 실패");
+      }
+    });
+
+    elBtnClear.addEventListener('click', () => {
+      elInput.value = "";
+      process();
+      elInput.focus();
+    });
+
+    elInput.addEventListener('input', process);
+    elKeepParens.addEventListener('change', process);
+    elVatLine.addEventListener('change', process);
+
+    process();
+  </script>
+</body>
+</html>
