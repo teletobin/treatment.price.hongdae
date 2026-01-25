@@ -212,7 +212,9 @@
       color: var(--text);
     }
     
-    #output { background: #fdfdfd; color: #444; }
+    /* Editability indicator for output */
+    #output { background: #fff; color: #333; }
+    #output:focus { background: #fffaff; }
 
     .panel-footer {
       padding: 14px 20px;
@@ -276,17 +278,17 @@
       </div>
       <div class="actions">
         <button id="btnClear" class="btn btn-clear">CLEAR</button>
-        <button id="btnCopy" class="btn btn-copy">정리결과 복사</button>
+        <button id="btnCopy" class="btn btn-copy">편집내용 복사</button>
       </div>
     </div>
 
     <div class="editor-grid">
       <section class="panel">
         <div class="panel-header">
-          <span class="panel-title">원본 텍스트</span>
+          <span class="panel-title">원본 텍스트 (입력)</span>
           <span id="inputStatus" class="status-badge">READY</span>
         </div>
-        <textarea id="input" placeholder="시술명+가격 부분을 전체 복사해서 이곳에 붙여넣기 하세요."></textarea>
+        <textarea id="input" placeholder="시술명+가격 부분을 전체 복사해서 붙여넣기 하세요."></textarea>
         <div class="panel-footer">
           시술명과 가격이 포함된 텍스트를 넣어주세요.
         </div>
@@ -297,9 +299,9 @@
           <span class="panel-title">정리된 결과</span>
           <span id="outputCount" class="status-badge">0건</span>
         </div>
-        <textarea id="output" readonly placeholder="결과가 여기에 표시됩니다."></textarea>
+        <textarea id="output" placeholder="결과가 여기에 표시되며 자유롭게 수정 가능합니다."></textarea>
         <div class="panel-footer" id="msgBox">
-          대기 중
+          자동 정리 후 직접 수정할 수 있습니다.
         </div>
       </section>
     </div>
@@ -323,6 +325,10 @@
     const elBtnClear = document.getElementById('btnClear');
     const elToast = document.getElementById('toast');
 
+    // To prevent overwriting user edits immediately while typing in the output box,
+    // we use a flag or only auto-process when the input changes.
+    let isEditingOutput = false;
+
     function cleanName(name, keepParens) {
       let n = name;
       if (!keepParens) {
@@ -334,11 +340,15 @@
 
     function extractPrice(text) {
       if (!text) return null;
+      // Matches prices like 10,000원 or 5000원
       const match = text.match(/(\d{1,3}(,\d{3})*|\d+)원/);
       return match ? match[0] : null;
     }
 
     function process() {
+      // If the user is manually editing the output, we don't auto-overwrite
+      if (isEditingOutput) return;
+
       const raw = elInput.value.trim();
       const keepParens = elKeepParens.checked;
       const useVat = elVatLine.checked;
@@ -370,6 +380,7 @@
         const priceInNext = extractPrice(nextLine);
 
         if (priceInNext) {
+          // If current line looks like a name (not a price/discount info), pair it with next line's price
           if (!/%|원|할인|이벤트/.test(currentLine)) {
             results.push(`${cleanName(currentLine, keepParens)} ${priceInNext}`);
             i++; 
@@ -385,7 +396,7 @@
       elOutput.value = finalTxt;
       elCount.textContent = results.length + "건";
       elStatus.textContent = "DONE";
-      elMsg.textContent = results.length > 0 ? "정리가 완료되었습니다." : "가격을 찾을 수 없습니다.";
+      elMsg.textContent = results.length > 0 ? "자동 정리가 완료되었습니다. 필요시 수정하세요." : "가격을 찾을 수 없습니다.";
     }
 
     function showToast(msg) {
@@ -399,25 +410,43 @@
       elOutput.select();
       try {
         document.execCommand('copy');
-        showToast("정리 텍스트 복사완료");
+        showToast("편집된 텍스트 복사완료");
       } catch (err) {
         showToast("복사 실패");
       }
     });
 
     elBtnClear.addEventListener('click', () => {
+      isEditingOutput = false;
       elInput.value = "";
       process();
       elInput.focus();
     });
 
-    elInput.addEventListener('input', process);
-    elKeepParens.addEventListener('change', process);
-    elVatLine.addEventListener('change', process);
+    // Event Listeners
+    elInput.addEventListener('input', () => {
+      isEditingOutput = false; // Reset flag when new input comes in
+      process();
+    });
 
+    elOutput.addEventListener('input', () => {
+      isEditingOutput = true; // Set flag so auto-process doesn't overwrite manual edits
+      elStatus.textContent = "EDITING";
+      elMsg.textContent = "사용자가 직접 편집 중입니다.";
+    });
+
+    elKeepParens.addEventListener('change', () => {
+      isEditingOutput = false;
+      process();
+    });
+
+    elVatLine.addEventListener('change', () => {
+      isEditingOutput = false;
+      process();
+    });
+
+    // Initial run
     process();
   </script>
 </body>
 </html>
-
-
