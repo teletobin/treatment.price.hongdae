@@ -381,7 +381,7 @@
 
         if (priceInNext) {
           // If current line looks like a name (not a price/discount info), pair it with next line's price
-          if (!/%|원|할인|이벤트/.test(currentLine)) {
+          if (!/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
             results.push(`${cleanName(currentLine, keepParens)} ${priceInNext}`);
             i++; 
           }
@@ -449,4 +449,5 @@
     process();
   </script>
 </body>
+
 </html>
