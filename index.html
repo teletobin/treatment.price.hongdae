@@ -442,11 +442,8 @@
 <div id="toast">복사 완료!</div>
 
 <script>
-  // [구글 시트 연동 설정] 
-  const GOOGLE_SHEET_CSV_URL = ""; 
-
   // [내부 고정 데이터베이스] 
-  let CUSTOM_DATABASE = [
+  const CUSTOM_DATABASE = [
     // 셀바이브 시리즈
     { name: "셀바이브(프리미엄LDM) 6분 1회", price: "29,000원" },
     { name: "셀바이브(프리미엄LDM) 6분 5회", price: "139,000원" },
@@ -461,44 +458,23 @@
     { name: "엔바이론 이온자임(고농도 비타민 침투) 5회", price: "390,000원" },
     { name: "서브시전 얼굴전체", price: "150,000원" },
     { name: "서브시전 1부위", price: "100,000원" },
-    { name: "쥬베룩스킨 2cc(눈밑 케뉼라)", price: "220,000원" },
-    { name: "올리디아스킨 2cc(눈밑 케뉼라)", price: "250,000원" },
-    { name: "블리비V주사", price: "100,000원" },
+    { name: "쥬베룩스킨 2cc(눈밑 케뉼라시술)", price: "220,000원" },
+    { name: "올리디아스킨 2cc(눈밑 케뉼라시술)", price: "250,000원" },
+    { name: "블리비V주사 1회", price: "100,000원" },
     { name: "블리비V주사 3회", price: "250,000원" },
     { name: "블리비V주사 3개월 책임제", price: "600,000원" },
-    { name: "코 조각주사", price: "50,000원" },
+    { name: "코 조각주사 1회", price: "50,000원" },
     { name: "코 조각주사 3회", price: "99,000원" },
-    { name: "특수부위(이마/미간/콧등주름,마리오넷,눈밑)필러 1cc", price: "350,000원" }
+    { name: "주름필러(이마/미간/콧등주름 등)1cc", price: "350,000원" }
   ];
 
   let treatmentData = [];
   let isEditingOutput = false;
 
-  window.onload = function() {
-    if (GOOGLE_SHEET_CSV_URL) {
-      fetchGoogleSheetData();
-    }
-  };
-
-  async function fetchGoogleSheetData() {
-    try {
-      const response = await fetch(GOOGLE_SHEET_CSV_URL);
-      const csvData = await response.text();
-      const rows = csvData.split('\n').slice(1);
-      const sheetItems = rows.map(row => {
-        const columns = row.split(',');
-        if (columns.length >= 2) {
-          return { name: columns[0].trim(), price: columns[1].trim() };
-        }
-        return null;
-      }).filter(item => item !== null && item.name !== "");
-      CUSTOM_DATABASE = [...CUSTOM_DATABASE, ...sheetItems];
-    } catch (error) {}
-  }
-
   function cleanName(name, keepParens) {
     let n = name;
     if (!keepParens) {
+      // 괄호 및 대괄호 내용 삭제
       n = n.replace(/\([^)]*\)/g, ""); 
       n = n.replace(/\[[^\]]*\]/g, ""); 
     }
@@ -513,7 +489,16 @@
 
   function handleOptionChange() {
     isEditingOutput = false; 
-    updateData(); 
+    
+    // 현재 검색어 상태 확인
+    const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
+                               .some(input => input.value.trim().length > 0);
+    
+    if (hasAnyKeyword) {
+      performExtraction();
+    } else {
+      updateData(); 
+    }
   }
 
   function handleManualEdit() {
@@ -542,7 +527,7 @@
           const namePart = currentLine.split(priceInCurrent)[0].trim();
           if (namePart && namePart.length > 1) {
             parsedData.push({
-              name: cleanName(namePart, keepParens),
+              name: namePart, // 원본 저장
               price: priceInCurrent
             });
             continue;
@@ -553,7 +538,7 @@
         const priceInNext = extractPrice(nextLine);
         if (priceInNext && !/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
           parsedData.push({
-            name: cleanName(currentLine, keepParens),
+            name: currentLine, // 원본 저장
             price: priceInNext
           });
           i++;
@@ -564,10 +549,8 @@
     treatmentData = parsedData;
     document.getElementById('inputStatus').innerText = `${treatmentData.length}건 분석됨`;
     
-    const searchInputs = document.querySelectorAll('.search-input');
-    const excludeInputs = document.querySelectorAll('.exclude-input');
-    const hasAnyKeyword = Array.from(searchInputs).some(input => input.value.trim().length > 0) || 
-                          Array.from(excludeInputs).some(input => input.value.trim().length > 0);
+    const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
+                               .some(input => input.value.trim().length > 0);
     
     if (!isEditingOutput) {
       if (hasAnyKeyword) {
@@ -580,7 +563,13 @@
 
   function renderResult(dataList) {
     const useVat = document.getElementById('vatLine').checked;
-    let finalTxt = dataList.map(item => `${item.name} ${item.price}`).join('\n');
+    const keepParens = document.getElementById('keepParens').checked;
+
+    // 렌더링 시점에 이름을 가공 (옵션 적용)
+    let finalTxt = dataList.map(item => {
+      const displayName = cleanName(item.name, keepParens);
+      return `${displayName} ${item.price}`;
+    }).filter(line => line.trim() !== "").join('\n');
     
     if (useVat && dataList.length > 0) {
       finalTxt += (finalTxt ? "\n\n" : "") + "부가세 10% 별도입니다 😊";
@@ -613,11 +602,8 @@
       }
     });
 
-    let sourceData = [...treatmentData];
-    if (allKeywords.length > 0 || excludeKeywords.length > 0) {
-      sourceData = [...CUSTOM_DATABASE, ...treatmentData];
-    }
-
+    // 검색 시에는 DB와 현재 입력 데이터를 합침
+    let sourceData = [...CUSTOM_DATABASE, ...treatmentData];
     let filtered = sourceData;
 
     if (allKeywords.length > 0) {
