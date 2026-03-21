@@ -15,8 +15,8 @@
       --primary: #f06292;
       --primary-dark: #d81b60; 
       --primary-light: #fce4ec;
-      --text: #333333;
-      --text-sub: #9e9e9e;
+      --text: #424242; /* Sophisticated dark grey */
+      --text-sub: #757575; 
       --card-bg: #ffffff;
       --border: rgba(240, 98, 146, 0.2);
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
@@ -56,7 +56,7 @@
       margin: 0;
       font-size: 20px;
       font-weight: 700;
-      color: #333333;
+      color: var(--text);
       letter-spacing: -0.7px;
     }
 
@@ -93,9 +93,9 @@
     }
 
     .section-title {
-      font-size: 15px;
+      font-size: 18px; /* 기존 15px에서 확대 */
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -104,14 +104,14 @@
     .title-text {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .title-text::before {
       content: '';
       display: inline-block;
-      width: 4px;
-      height: 14px;
+      width: 5px;
+      height: 18px;
       background: var(--primary);
       border-radius: 2px;
     }
@@ -128,6 +128,7 @@
       outline: none;
       background: #fffafa;
       transition: all 0.2s;
+      color: var(--text);
     }
 
     textarea:focus {
@@ -143,25 +144,53 @@
       margin-bottom: 16px;
     }
 
-    .search-inputs-row {
+    .search-inputs-row, .exclude-inputs-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-group {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 8px; 
+      flex: 1;
+    }
+
+    .label-tag {
+      font-size: 14px; 
+      font-weight: 800;
+      color: var(--text); 
+      white-space: nowrap;
+      width: 50px; 
+      text-align: center;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid var(--border);
       font-size: 13px;
       font-weight: 600;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
+      color: var(--text);
     }
 
     input[type="text"]:focus {
       border-color: var(--primary);
+      background: #fff;
+    }
+
+    .exclude-input {
+      background: #f8f8f8;
+      border-color: #eee;
+    }
+
+    .exclude-input:focus {
+      border-color: #9e9e9e;
+      background: #fff;
     }
 
     .btn {
@@ -175,27 +204,42 @@
       justify-content: center;
     }
 
-    .btn-search {
+    .btn-action {
       background: var(--primary);
       color: white;
-      width: 100%;
-      padding: 12px;
+      padding: 10px 20px;
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13px;
+      height: 39px; 
       box-shadow: 0 4px 10px rgba(240, 98, 146, 0.2);
+      white-space: nowrap;
+      min-width: 60px;
     }
 
-    .btn-search:hover {
+    .btn-action:hover {
       background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-exclude {
+      background: #e0e0e0;
+      color: #616161;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    }
+    
+    .btn-exclude:hover {
+      background: #bdbdbd;
+      color: #424242;
       transform: translateY(-1px);
     }
 
     .btn-copy-small {
       background: var(--primary);
       color: white;
-      padding: 8px 16px;
+      padding: 0 20px;
       border-radius: 50px;
       font-size: 12px;
+      height: 38px; 
       margin-left: auto;
       box-shadow: 0 4px 10px rgba(240, 98, 146, 0.2);
     }
@@ -205,14 +249,22 @@
       transform: translateY(-1px);
     }
 
+    /* 상단 버튼들의 높이 및 스타일 통일 */
+    .btn-header-action {
+      height: 32px; /* 높이 통일 */
+      padding: 0 14px;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .btn-clear {
       background: var(--primary-light);
       border: 1px solid rgba(240, 98, 146, 0.2);
       color: var(--primary-dark);
-      font-size: 11px;
-      font-weight: 800;
-      padding: 5px 12px;
-      border-radius: 50px;
       letter-spacing: 0.5px;
     }
 
@@ -224,12 +276,8 @@
       background: #ffffff;
       border: 1px solid var(--border);
       color: var(--primary-dark);
-      font-size: 11px;
-      font-weight: 800;
-      padding: 5px 12px;
-      border-radius: 50px;
-      margin-right: 6px;
       box-shadow: 0 2px 6px rgba(240, 98, 146, 0.05);
+      margin-right: 6px;
     }
 
     .btn-link-site:hover {
@@ -250,7 +298,8 @@
     .option-pill {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      padding: 8px 14px;
+      padding: 0 14px;
+      height: 38px; 
       border-radius: 50px;
       display: flex;
       align-items: center;
@@ -325,9 +374,9 @@
     <div class="card">
       <div class="section-title">
         <div class="title-text">원본 데이터 입력</div>
-        <div>
-          <a href="https://www.velyb.kr/community/community01.php?tb=event2&etc5=%ED%99%8D%EB%8C%80%EC%A0%90&intGP=&style=&sField=2" target="_blank" class="btn btn-link-site">홍대점 홈페이지</a>
-          <button class="btn btn-clear" onclick="clearAll()">CLEAR</button>
+        <div style="display: flex; align-items: center;">
+          <a href="https://www.velyb.kr/community/community01.php?tb=event2&etc5=%ED%99%8D%EB%8C%80%EC%A0%90&intGP=&style=&sField=2" target="_blank" class="btn btn-header-action btn-link-site">홍대점 홈페이지</a>
+          <button class="btn btn-header-action btn-clear" onclick="clearAll()">CLEAR</button>
         </div>
       </div>
 
@@ -346,12 +395,27 @@
       </div>
 
       <div class="search-grid">
+        <!-- Search Keywords Row -->
         <div class="search-inputs-row">
-          <input type="text" class="search-input" placeholder="키워드 1" onkeyup="handleSearchKey(event)">
-          <input type="text" class="search-input" placeholder="키워드 2" onkeyup="handleSearchKey(event)">
-          <input type="text" class="search-input" placeholder="키워드 3" onkeyup="handleSearchKey(event)">
+          <div class="label-tag">검색어</div>
+          <div class="input-group">
+            <input type="text" class="search-input" placeholder="키워드 1" onkeyup="handleSearchKey(event)">
+            <input type="text" class="search-input" placeholder="키워드 2" onkeyup="handleSearchKey(event)">
+            <input type="text" class="search-input" placeholder="키워드 3" onkeyup="handleSearchKey(event)">
+          </div>
+          <button class="btn btn-action" onclick="performExtraction()">검색</button>
         </div>
-        <button class="btn btn-search" onclick="performExtraction()">키워드 추출</button>
+        
+        <!-- Exclude Keywords Row -->
+        <div class="exclude-inputs-row">
+          <div class="label-tag">제외어</div>
+          <div class="input-group">
+            <input type="text" class="exclude-input" placeholder="제외 1" onkeyup="handleSearchKey(event)">
+            <input type="text" class="exclude-input" placeholder="제외 2" onkeyup="handleSearchKey(event)">
+            <input type="text" class="exclude-input" placeholder="제외 3" onkeyup="handleSearchKey(event)">
+          </div>
+          <button class="btn btn-action btn-exclude" onclick="performExtraction()">제외</button>
+        </div>
       </div>
 
       <textarea id="resultBox" placeholder="추출된 텍스트는 편집 가능합니다." oninput="handleManualEdit()"></textarea>
@@ -457,7 +521,9 @@
     document.getElementById('inputStatus').innerText = `${treatmentData.length}건 분석됨`;
     
     const searchInputs = document.querySelectorAll('.search-input');
-    const hasAnyKeyword = Array.from(searchInputs).some(input => input.value.trim().length > 0);
+    const excludeInputs = document.querySelectorAll('.exclude-input');
+    const hasAnyKeyword = Array.from(searchInputs).some(input => input.value.trim().length > 0) || 
+                          Array.from(excludeInputs).some(input => input.value.trim().length > 0);
     
     if (!isEditingOutput) {
       if (hasAnyKeyword) {
@@ -482,6 +548,7 @@
 
   function performExtraction() {
     const searchInputs = document.querySelectorAll('.search-input');
+    const excludeInputs = document.querySelectorAll('.exclude-input');
     isEditingOutput = false; 
 
     let allKeywords = [];
@@ -493,15 +560,30 @@
       }
     });
 
-    if (allKeywords.length === 0) {
-      renderResult(treatmentData);
-      return;
+    let excludeKeywords = [];
+    excludeInputs.forEach(input => {
+      const val = input.value.trim();
+      if (val) {
+        const kws = val.split(',').map(k => k.replace(/\s+/g, "").toLowerCase()).filter(k => k.length > 0);
+        excludeKeywords = [...excludeKeywords, ...kws];
+      }
+    });
+
+    let filtered = treatmentData;
+
+    if (allKeywords.length > 0) {
+      filtered = filtered.filter(item => {
+        const cleanItemName = item.name.replace(/\s+/g, "").toLowerCase();
+        return allKeywords.some(kw => cleanItemName.includes(kw));
+      });
     }
 
-    const filtered = treatmentData.filter(item => {
-      const cleanItemName = item.name.replace(/\s+/g, "").toLowerCase();
-      return allKeywords.some(kw => cleanItemName.includes(kw));
-    });
+    if (excludeKeywords.length > 0) {
+      filtered = filtered.filter(item => {
+        const cleanItemName = item.name.replace(/\s+/g, "").toLowerCase();
+        return !excludeKeywords.some(exKw => cleanItemName.includes(exKw));
+      });
+    }
 
     renderResult(filtered);
   }
@@ -510,6 +592,7 @@
     document.getElementById('dataInput').value = "";
     document.getElementById('resultBox').value = "";
     document.querySelectorAll('.search-input').forEach(input => input.value = "");
+    document.querySelectorAll('.exclude-input').forEach(input => input.value = "");
     treatmentData = [];
     isEditingOutput = false;
     document.getElementById('inputStatus').innerText = "READY";
