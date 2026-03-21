@@ -169,6 +169,10 @@
       cursor: pointer;
       transition: all 0.2s ease;
       font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-search {
@@ -214,6 +218,23 @@
 
     .btn-clear:hover {
       background: #f8bbd0;
+    }
+
+    .btn-link-site {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 50px;
+      margin-right: 6px;
+      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.05);
+    }
+
+    .btn-link-site:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
     }
 
     .card-footer-options {
@@ -304,7 +325,10 @@
     <div class="card">
       <div class="section-title">
         <div class="title-text">원본 데이터 입력</div>
-        <button class="btn btn-clear" onclick="clearAll()">CLEAR</button>
+        <div>
+          <a href="https://www.velyb.kr/community/community01.php?tb=event2&etc5=%ED%99%8D%EB%8C%80%EC%A0%90&intGP=&style=&sField=2" target="_blank" class="btn btn-link-site">홍대점 홈페이지</a>
+          <button class="btn btn-clear" onclick="clearAll()">CLEAR</button>
+        </div>
       </div>
 
       <textarea id="dataInput" placeholder="블리비 홈페이지에서 시술명+가격데이터를 붙여넣으면 즉시 추출됩니다." oninput="updateData()"></textarea>
