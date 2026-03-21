@@ -93,7 +93,7 @@
     }
 
     .section-title {
-      font-size: 18px; /* 기존 15px에서 확대 */
+      font-size: 18px; 
       font-weight: 700;
       margin-bottom: 20px;
       display: flex;
@@ -249,9 +249,8 @@
       transform: translateY(-1px);
     }
 
-    /* 상단 버튼들의 높이 및 스타일 통일 */
     .btn-header-action {
-      height: 32px; /* 높이 통일 */
+      height: 32px; 
       padding: 0 14px;
       font-size: 11px;
       font-weight: 800;
@@ -443,8 +442,59 @@
 <div id="toast">복사 완료!</div>
 
 <script>
+  // [구글 시트 연동 설정] 
+  const GOOGLE_SHEET_CSV_URL = ""; 
+
+  // [내부 고정 데이터베이스] 
+  let CUSTOM_DATABASE = [
+    // 셀바이브 시리즈
+    { name: "셀바이브(프리미엄LDM) 6분 1회", price: "29,000원" },
+    { name: "셀바이브(프리미엄LDM) 6분 5회", price: "139,000원" },
+    { name: "셀바이브(프리미엄LDM) 12분 1회", price: "55,000원" },
+    { name: "셀바이브(프리미엄LDM) 12분 5회", price: "250,000원" },
+    { name: "셀바이브(프리미엄LDM) 24분 1회", price: "105,000원" },
+    { name: "셀바이브(프리미엄LDM) 24분 5회", price: "550,000원" },
+    
+    // 이미지 추가 항목
+    { name: "엔바이론 이온자임(고농도 비타민 침투) 체험가", price: "69,000원" },
+    { name: "엔바이론 이온자임(고농도 비타민 침투)", price: "79,000원" },
+    { name: "엔바이론 이온자임(고농도 비타민 침투) 5회", price: "390,000원" },
+    { name: "서브시전 얼굴전체", price: "150,000원" },
+    { name: "서브시전 1부위", price: "100,000원" },
+    { name: "쥬베룩스킨 2cc(눈밑 케뉼라)", price: "220,000원" },
+    { name: "올리디아스킨 2cc(눈밑 케뉼라)", price: "250,000원" },
+    { name: "블리비V주사", price: "100,000원" },
+    { name: "블리비V주사 3회", price: "250,000원" },
+    { name: "블리비V주사 3개월 책임제", price: "600,000원" },
+    { name: "코 조각주사", price: "50,000원" },
+    { name: "코 조각주사 3회", price: "99,000원" },
+    { name: "특수부위(이마/미간/콧등주름,마리오넷,눈밑)필러 1cc", price: "350,000원" }
+  ];
+
   let treatmentData = [];
   let isEditingOutput = false;
+
+  window.onload = function() {
+    if (GOOGLE_SHEET_CSV_URL) {
+      fetchGoogleSheetData();
+    }
+  };
+
+  async function fetchGoogleSheetData() {
+    try {
+      const response = await fetch(GOOGLE_SHEET_CSV_URL);
+      const csvData = await response.text();
+      const rows = csvData.split('\n').slice(1);
+      const sheetItems = rows.map(row => {
+        const columns = row.split(',');
+        if (columns.length >= 2) {
+          return { name: columns[0].trim(), price: columns[1].trim() };
+        }
+        return null;
+      }).filter(item => item !== null && item.name !== "");
+      CUSTOM_DATABASE = [...CUSTOM_DATABASE, ...sheetItems];
+    } catch (error) {}
+  }
 
   function cleanName(name, keepParens) {
     let n = name;
@@ -481,43 +531,37 @@
     const rawText = document.getElementById('dataInput').value.trim();
     const keepParens = document.getElementById('keepParens').checked;
     
-    if (!rawText) {
-      treatmentData = [];
-      document.getElementById('resultBox').value = "";
-      document.getElementById('inputStatus').innerText = "READY";
-      document.getElementById('resultCount').innerText = "0건";
-      return;
-    }
+    let parsedData = [];
+    if (rawText) {
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      for (let i = 0; i < lines.length; i++) {
+        const currentLine = lines[i];
+        const priceInCurrent = extractPrice(currentLine);
+        
+        if (priceInCurrent) {
+          const namePart = currentLine.split(priceInCurrent)[0].trim();
+          if (namePart && namePart.length > 1) {
+            parsedData.push({
+              name: cleanName(namePart, keepParens),
+              price: priceInCurrent
+            });
+            continue;
+          }
+        }
 
-    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    treatmentData = [];
-    
-    for (let i = 0; i < lines.length; i++) {
-      const currentLine = lines[i];
-      const priceInCurrent = extractPrice(currentLine);
-      
-      if (priceInCurrent) {
-        const namePart = currentLine.split(priceInCurrent)[0].trim();
-        if (namePart && namePart.length > 1) {
-          treatmentData.push({
-            name: cleanName(namePart, keepParens),
-            price: priceInCurrent
+        const nextLine = lines[i + 1] || "";
+        const priceInNext = extractPrice(nextLine);
+        if (priceInNext && !/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
+          parsedData.push({
+            name: cleanName(currentLine, keepParens),
+            price: priceInNext
           });
-          continue;
+          i++;
         }
       }
-
-      const nextLine = lines[i + 1] || "";
-      const priceInNext = extractPrice(nextLine);
-      if (priceInNext && !/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
-        treatmentData.push({
-          name: cleanName(currentLine, keepParens),
-          price: priceInNext
-        });
-        i++;
-      }
     }
 
+    treatmentData = parsedData;
     document.getElementById('inputStatus').innerText = `${treatmentData.length}건 분석됨`;
     
     const searchInputs = document.querySelectorAll('.search-input');
@@ -569,7 +613,12 @@
       }
     });
 
-    let filtered = treatmentData;
+    let sourceData = [...treatmentData];
+    if (allKeywords.length > 0 || excludeKeywords.length > 0) {
+      sourceData = [...CUSTOM_DATABASE, ...treatmentData];
+    }
+
+    let filtered = sourceData;
 
     if (allKeywords.length > 0) {
       filtered = filtered.filter(item => {
