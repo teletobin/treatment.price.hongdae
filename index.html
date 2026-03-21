@@ -1,13 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>블리비의원 | 시술가격정리</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시술가격 검색 정리</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
   <style>
     :root {
@@ -17,16 +16,18 @@
       --primary-dark: #d81b60; 
       --primary-light: #fce4ec;
       --text: #333333;
+      --text-sub: #9e9e9e;
       --card-bg: #ffffff;
       --border: rgba(240, 98, 146, 0.2);
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
       --radius: 20px;
     }
 
-    * { 
-      box-sizing: border-box; 
-      -webkit-tap-highlight-color: transparent; 
-      font-family: "Noto Sans KR", sans-serif !important;
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+      color: var(--text);
     }
 
     body {
@@ -59,176 +60,213 @@
       letter-spacing: -0.7px;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 30px 20px;
-      width: 100%;
+    .main-wrapper {
       flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
     }
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .options {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .btn-link {
-      background: var(--primary-light);
-      border: 1px solid rgba(240, 98, 146, 0.2);
-      padding: 9px 16px;
-      border-radius: 50px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      color: var(--primary-dark);
-      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.04);
-      transition: all 0.2s ease;
-    }
-    .btn-link:hover {
-      background: #f8bbd0;
-      transform: translateY(-1px);
-    }
-
-    .option-pill {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 9px 16px;
-      border-radius: 50px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.04);
-      transition: all 0.2s ease;
-      color: var(--text);
-    }
-    .option-pill:hover { border-color: var(--primary); transform: translateY(-1px); }
-    .option-pill input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
-
-    .actions { display: flex; gap: 10px; }
-
-    .btn {
-      border: none;
-      padding: 12px 24px;
-      border-radius: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 14px;
-    }
-
-    .btn-copy {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 15px rgba(240, 98, 146, 0.2);
-    }
-    .btn-copy:hover { 
-      background: var(--primary-dark);
-      transform: translateY(-2px); 
-      box-shadow: 0 6px 20px rgba(240, 98, 146, 0.25);
-    }
-    .btn-copy:active { transform: translateY(0); }
-
-    .btn-clear {
-      background: #fff;
-      color: #777;
-      border: 1px solid #eee;
-    }
-    .btn-clear:hover { background: #fafafa; color: #444; border-color: #ddd; }
-
-    .editor-grid {
+    .grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
       width: 100%;
     }
 
-    @media (max-width: 850px) {
-      .editor-grid { grid-template-columns: 1fr; }
-      .toolbar { flex-direction: column; align-items: stretch; }
-      .actions { display: grid; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .panel {
+    .card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      min-height: 650px;
     }
-    .panel:focus-within { border-color: var(--primary); box-shadow: 0 12px 30px rgba(240, 98, 146, 0.1); }
 
-    .panel-header {
-      padding: 16px 20px;
-      background: #fff;
-      border-bottom: 1px solid #f9f9f9;
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .panel-title { font-size: 14px; font-weight: 700; color: #555; }
-    
-    .status-badge {
-      font-size: 11px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      font-weight: 700;
-      border: 1px solid rgba(240, 98, 146, 0.1);
+    .title-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-text::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 2px;
     }
 
     textarea {
       width: 100%;
-      height: 480px;
-      padding: 20px;
-      border: none;
-      resize: none;
+      flex: 1;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
       font-size: 14px;
-      line-height: 1.8;
-      background: transparent;
+      line-height: 1.7;
+      resize: none;
       outline: none;
-      color: var(--text);
+      background: #fffafa;
+      transition: all 0.2s;
     }
-    
-    /* Editability indicator for output */
-    #output { background: #fff; color: #333; }
-    #output:focus { background: #fffaff; }
 
-    .panel-footer {
-      padding: 14px 20px;
+    textarea:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.05);
+    }
+
+    .search-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .search-inputs-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 700;
+    }
+
+    .btn-search {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(240, 98, 146, 0.2);
+    }
+
+    .btn-search:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-small {
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 50px;
       font-size: 12px;
-      background: #fafafa;
-      border-top: 1px solid #f5f5f5;
-      color: #999;
+      margin-left: auto;
+      box-shadow: 0 4px 10px rgba(240, 98, 146, 0.2);
+    }
+
+    .btn-copy-small:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-clear {
+      background: var(--primary-light);
+      border: 1px solid rgba(240, 98, 146, 0.2);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 50px;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-clear:hover {
+      background: #f8bbd0;
+    }
+
+    .card-footer-options {
+      margin-top: 16px;
+      display: flex;
+      align-items: center; 
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .option-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .option-pill:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .option-pill input {
+      accent-color: var(--primary);
+      width: 15px;
+      height: 15px;
+      margin: 0;
+    }
+
+    .count-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 3px 10px;
+      border-radius: 20px;
     }
 
     footer {
       padding: 20px 0;
       text-align: center;
       font-size: 13px;
-      color: #9e9e9e;
+      color: var(--text-sub);
       letter-spacing: 0.3px;
       font-weight: 500;
       margin-top: 10px;
@@ -236,218 +274,243 @@
 
     #toast {
       position: fixed;
-      bottom: 40px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: #333;
       color: white;
-      padding: 12px 28px;
+      padding: 12px 24px;
       border-radius: 50px;
       font-size: 13px;
-      font-weight: 500;
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.3s ease;
       z-index: 1000;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
+
     #toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>블리비 홍대점 | 시술명 가격 정리</h1>
-  </header>
 
-  <div class="container">
-    <div class="toolbar">
-      <div class="options">
-        <a href="https://www.velyb.kr/community/community01.php?tb=event&etc5=%ED%99%8D%EB%8C%80%EC%A0%90" 
-           target="_blank" 
-           class="btn-link">
-          <span>홍대점 웹사이트</span>
-        </a>
+<header>
+  <h1>블리비의원 시술가격 검색 및 정리</h1>
+</header>
 
+<div class="main-wrapper">
+  
+  <div class="grid-container">
+    
+    <!-- Left: Data Input -->
+    <div class="card">
+      <div class="section-title">
+        <div class="title-text">원본 데이터 입력</div>
+        <button class="btn btn-clear" onclick="clearAll()">CLEAR</button>
+      </div>
+
+      <textarea id="dataInput" placeholder="블리비 홈페이지에서 시술명+가격데이터를 붙여넣으면 즉시 추출됩니다." oninput="updateData()"></textarea>
+      
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+          <span id="inputStatus" class="count-badge">READY</span>
+      </div>
+    </div>
+
+    <!-- Right: Search and Result Editing -->
+    <div class="card">
+      <div class="section-title">
+        <div class="title-text">정리 결과 및 추출 검색</div>
+        <span id="resultCount" class="count-badge">0건</span>
+      </div>
+
+      <div class="search-grid">
+        <div class="search-inputs-row">
+          <input type="text" class="search-input" placeholder="키워드 1" onkeyup="handleSearchKey(event)">
+          <input type="text" class="search-input" placeholder="키워드 2" onkeyup="handleSearchKey(event)">
+          <input type="text" class="search-input" placeholder="키워드 3" onkeyup="handleSearchKey(event)">
+        </div>
+        <button class="btn btn-search" onclick="performExtraction()">키워드 추출</button>
+      </div>
+
+      <textarea id="resultBox" placeholder="추출된 텍스트는 편집 가능합니다." oninput="handleManualEdit()"></textarea>
+
+      <div class="card-footer-options">
         <label class="option-pill">
-          <input type="checkbox" id="keepParens" checked>
+          <input type="checkbox" id="keepParens" checked onchange="handleOptionChange()">
           <span>괄호 속 텍스트 유지</span>
         </label>
         <label class="option-pill">
-          <input type="checkbox" id="vatLine" checked>
+          <input type="checkbox" id="vatLine" checked onchange="handleOptionChange()">
           <span>부가세 안내 포함</span>
         </label>
-      </div>
-      <div class="actions">
-        <button id="btnClear" class="btn btn-clear">CLEAR</button>
-        <button id="btnCopy" class="btn btn-copy">편집내용 복사</button>
+        
+        <button class="btn btn-copy-small" onclick="copyResult()">텍스트 복사</button>
       </div>
     </div>
-
-    <div class="editor-grid">
-      <section class="panel">
-        <div class="panel-header">
-          <span class="panel-title">원본 텍스트 (입력)</span>
-          <span id="inputStatus" class="status-badge">READY</span>
-        </div>
-        <textarea id="input" placeholder="시술명+가격 부분을 전체 복사해서 붙여넣기 하세요."></textarea>
-        <div class="panel-footer">
-          시술명과 가격이 포함된 텍스트를 넣어주세요.
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-header">
-          <span class="panel-title">정리된 결과</span>
-          <span id="outputCount" class="status-badge">0건</span>
-        </div>
-        <textarea id="output" placeholder="결과가 여기에 표시되며 자유롭게 수정 가능합니다."></textarea>
-        <div class="panel-footer" id="msgBox">
-          자동 정리 후 직접 수정할 수 있습니다.
-        </div>
-      </section>
-    </div>
-
-    <footer>
-      &copy; 2026. Designed & Developed by EUNBIN GA
-    </footer>
   </div>
 
-  <div id="toast">텍스트 복사 완료</div>
+  <footer>
+    &copy; 2026. Designed & Developed by EUNBIN GA
+  </footer>
+</div>
 
-  <script>
-    const elInput = document.getElementById('input');
-    const elOutput = document.getElementById('output');
-    const elKeepParens = document.getElementById('keepParens');
-    const elVatLine = document.getElementById('vatLine');
-    const elStatus = document.getElementById('inputStatus');
-    const elCount = document.getElementById('outputCount');
-    const elMsg = document.getElementById('msgBox');
-    const elBtnCopy = document.getElementById('btnCopy');
-    const elBtnClear = document.getElementById('btnClear');
-    const elToast = document.getElementById('toast');
+<div id="toast">복사 완료!</div>
 
-    // To prevent overwriting user edits immediately while typing in the output box,
-    // we use a flag or only auto-process when the input changes.
-    let isEditingOutput = false;
+<script>
+  let treatmentData = [];
+  let isEditingOutput = false;
 
-    function cleanName(name, keepParens) {
-      let n = name;
-      if (!keepParens) {
-        n = n.replace(/\([^)]*\)/g, ""); 
-        n = n.replace(/\[[^\]]*\]/g, ""); 
-      }
-      return n.replace(/\s+/g, " ").trim();
+  function cleanName(name, keepParens) {
+    let n = name;
+    if (!keepParens) {
+      n = n.replace(/\([^)]*\)/g, ""); 
+      n = n.replace(/\[[^\]]*\]/g, ""); 
+    }
+    return n.replace(/\s+/g, " ").trim();
+  }
+
+  function extractPrice(text) {
+    if (!text) return null;
+    const match = text.match(/(\d{1,3}(,\d{3})*|\d+)원/);
+    return match ? match[0] : null;
+  }
+
+  function handleOptionChange() {
+    isEditingOutput = false; 
+    updateData(); 
+  }
+
+  function handleManualEdit() {
+    isEditingOutput = true;
+    document.getElementById('resultCount').innerText = "편집 중";
+  }
+
+  function handleSearchKey(e) {
+    if(e.keyCode === 13) {
+      performExtraction();
+    }
+  }
+
+  function updateData() {
+    const rawText = document.getElementById('dataInput').value.trim();
+    const keepParens = document.getElementById('keepParens').checked;
+    
+    if (!rawText) {
+      treatmentData = [];
+      document.getElementById('resultBox').value = "";
+      document.getElementById('inputStatus').innerText = "READY";
+      document.getElementById('resultCount').innerText = "0건";
+      return;
     }
 
-    function extractPrice(text) {
-      if (!text) return null;
-      // Matches prices like 10,000원 or 5000원
-      const match = text.match(/(\d{1,3}(,\d{3})*|\d+)원/);
-      return match ? match[0] : null;
-    }
-
-    function process() {
-      // If the user is manually editing the output, we don't auto-overwrite
-      if (isEditingOutput) return;
-
-      const raw = elInput.value.trim();
-      const keepParens = elKeepParens.checked;
-      const useVat = elVatLine.checked;
-
-      if (!raw) {
-        elOutput.value = "";
-        elCount.textContent = "0건";
-        elStatus.textContent = "READY";
-        elMsg.textContent = "텍스트를 입력하면 자동으로 정리됩니다.";
-        return;
-      }
-
-      const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
-      const results = [];
+    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    treatmentData = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const currentLine = lines[i];
+      const priceInCurrent = extractPrice(currentLine);
       
-      for (let i = 0; i < lines.length; i++) {
-        const currentLine = lines[i];
-        const priceInCurrent = extractPrice(currentLine);
-        
-        if (priceInCurrent) {
-          const namePart = currentLine.split(priceInCurrent)[0].trim();
-          if (namePart) {
-            results.push(`${cleanName(namePart, keepParens)} ${priceInCurrent}`);
-            continue;
-          }
-        }
-
-        const nextLine = lines[i + 1] || "";
-        const priceInNext = extractPrice(nextLine);
-
-        if (priceInNext) {
-          // If current line looks like a name (not a price/discount info), pair it with next line's price
-          if (!/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
-            results.push(`${cleanName(currentLine, keepParens)} ${priceInNext}`);
-            i++; 
-          }
+      if (priceInCurrent) {
+        const namePart = currentLine.split(priceInCurrent)[0].trim();
+        if (namePart && namePart.length > 1) {
+          treatmentData.push({
+            name: cleanName(namePart, keepParens),
+            price: priceInCurrent
+          });
+          continue;
         }
       }
 
-      let finalTxt = results.join('\n');
-      if (useVat && results.length > 0) {
-        finalTxt += "\n\n부가세 10% 별도입니다 😊";
+      const nextLine = lines[i + 1] || "";
+      const priceInNext = extractPrice(nextLine);
+      if (priceInNext && !/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
+        treatmentData.push({
+          name: cleanName(currentLine, keepParens),
+          price: priceInNext
+        });
+        i++;
       }
-
-      elOutput.value = finalTxt;
-      elCount.textContent = results.length + "건";
-      elStatus.textContent = "DONE";
-      elMsg.textContent = results.length > 0 ? "자동 정리가 완료되었습니다. 필요시 수정하세요." : "가격을 찾을 수 없습니다.";
     }
 
-    function showToast(msg) {
-      elToast.textContent = msg;
-      elToast.classList.add('show');
-      setTimeout(() => elToast.classList.remove('show'), 2000);
+    document.getElementById('inputStatus').innerText = `${treatmentData.length}건 분석됨`;
+    
+    const searchInputs = document.querySelectorAll('.search-input');
+    const hasAnyKeyword = Array.from(searchInputs).some(input => input.value.trim().length > 0);
+    
+    if (!isEditingOutput) {
+      if (hasAnyKeyword) {
+        performExtraction(); 
+      } else {
+        renderResult(treatmentData); 
+      }
     }
+  }
 
-    elBtnCopy.addEventListener('click', () => {
-      if (!elOutput.value) return;
-      elOutput.select();
-      try {
-        document.execCommand('copy');
-        showToast("편집된 텍스트 복사완료");
-      } catch (err) {
-        showToast("복사 실패");
+  function renderResult(dataList) {
+    const useVat = document.getElementById('vatLine').checked;
+    let finalTxt = dataList.map(item => `${item.name} ${item.price}`).join('\n');
+    
+    if (useVat && dataList.length > 0) {
+      finalTxt += (finalTxt ? "\n\n" : "") + "부가세 10% 별도입니다 😊";
+    }
+    
+    document.getElementById('resultBox').value = finalTxt;
+    document.getElementById('resultCount').innerText = `${dataList.length}건`;
+  }
+
+  function performExtraction() {
+    const searchInputs = document.querySelectorAll('.search-input');
+    isEditingOutput = false; 
+
+    let allKeywords = [];
+    searchInputs.forEach(input => {
+      const val = input.value.trim();
+      if (val) {
+        const kws = val.split(',').map(k => k.replace(/\s+/g, "").toLowerCase()).filter(k => k.length > 0);
+        allKeywords = [...allKeywords, ...kws];
       }
     });
 
-    elBtnClear.addEventListener('click', () => {
-      isEditingOutput = false;
-      elInput.value = "";
-      process();
-      elInput.focus();
+    if (allKeywords.length === 0) {
+      renderResult(treatmentData);
+      return;
+    }
+
+    const filtered = treatmentData.filter(item => {
+      const cleanItemName = item.name.replace(/\s+/g, "").toLowerCase();
+      return allKeywords.some(kw => cleanItemName.includes(kw));
     });
 
-    // Event Listeners
-    elInput.addEventListener('input', () => {
-      isEditingOutput = false; // Reset flag when new input comes in
-      process();
-    });
+    renderResult(filtered);
+  }
 
-    elOutput.addEventListener('input', () => {
-      isEditingOutput = true; // Set flag so auto-process doesn't overwrite manual edits
-      elStatus.textContent = "EDITING";
-      elMsg.textContent = "사용자가 직접 편집 중입니다.";
-    });
+  function clearAll() {
+    document.getElementById('dataInput').value = "";
+    document.getElementById('resultBox').value = "";
+    document.querySelectorAll('.search-input').forEach(input => input.value = "");
+    treatmentData = [];
+    isEditingOutput = false;
+    document.getElementById('inputStatus').innerText = "READY";
+    document.getElementById('resultCount').innerText = "0건";
+  }
 
-    elKeepParens.addEventListener('change', () => {
-      isEditingOutput = false;
-      process();
-    });
+  function copyResult() {
+    const resultBox = document.getElementById('resultBox');
+    const text = resultBox.value;
+    if (!text) return;
 
-    elVatLine.addEventListener('change', () => {
-      isEditingOutput = false;
-      process();
-    });
+    const tempElem = document.createElement("textarea");
+    tempElem.value = text;
+    document.body.appendChild(tempElem);
+    tempElem.select();
+    
+    try {
+      document.execCommand('copy');
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    } catch (err) {}
+    document.body.removeChild(tempElem);
+  }
+</script>
 
-    // Initial run
-    process();
-  </script>
 </body>
-
 </html>
