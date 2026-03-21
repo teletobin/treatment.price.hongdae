@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>시술가격 검색 정리</title>
-
   <!-- Pretendard Font -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-
   <style>
     :root {
       color-scheme: light;
@@ -226,7 +224,7 @@
       color: #616161;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
     }
-    
+
     .btn-exclude:hover {
       background: #bdbdbd;
       color: #424242;
@@ -358,7 +356,6 @@
     #toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
-
 <body>
 
 <header>
@@ -366,9 +363,7 @@
 </header>
 
 <div class="main-wrapper">
-  
   <div class="grid-container">
-    
     <!-- Left: Data Input -->
     <div class="card">
       <div class="section-title">
@@ -442,17 +437,14 @@
 <div id="toast">복사 완료!</div>
 
 <script>
-  // [내부 고정 데이터베이스] 
+  // [내부 고정 데이터베이스]
   const CUSTOM_DATABASE = [
-    // 셀바이브 시리즈
     { name: "셀바이브(프리미엄LDM) 6분 1회", price: "29,000원" },
     { name: "셀바이브(프리미엄LDM) 6분 5회", price: "139,000원" },
     { name: "셀바이브(프리미엄LDM) 12분 1회", price: "55,000원" },
     { name: "셀바이브(프리미엄LDM) 12분 5회", price: "250,000원" },
     { name: "셀바이브(프리미엄LDM) 24분 1회", price: "105,000원" },
     { name: "셀바이브(프리미엄LDM) 24분 5회", price: "550,000원" },
-    
-    // 이미지 추가 항목
     { name: "엔바이론 이온자임(고농도 비타민 침투) 체험가", price: "69,000원" },
     { name: "엔바이론 이온자임(고농도 비타민 침투)", price: "79,000원" },
     { name: "엔바이론 이온자임(고농도 비타민 침투) 5회", price: "390,000원" },
@@ -474,7 +466,6 @@
   function cleanName(name, keepParens) {
     let n = name;
     if (!keepParens) {
-      // 괄호 및 대괄호 내용 삭제
       n = n.replace(/\([^)]*\)/g, ""); 
       n = n.replace(/\[[^\]]*\]/g, ""); 
     }
@@ -488,12 +479,9 @@
   }
 
   function handleOptionChange() {
-    isEditingOutput = false; 
-    
-    // 현재 검색어 상태 확인
+    isEditingOutput = false;
     const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
                                .some(input => input.value.trim().length > 0);
-    
     if (hasAnyKeyword) {
       performExtraction();
     } else {
@@ -514,45 +502,33 @@
 
   function updateData() {
     const rawText = document.getElementById('dataInput').value.trim();
-    const keepParens = document.getElementById('keepParens').checked;
-    
     let parsedData = [];
     if (rawText) {
       const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       for (let i = 0; i < lines.length; i++) {
         const currentLine = lines[i];
         const priceInCurrent = extractPrice(currentLine);
-        
         if (priceInCurrent) {
           const namePart = currentLine.split(priceInCurrent)[0].trim();
           if (namePart && namePart.length > 1) {
-            parsedData.push({
-              name: namePart, // 원본 저장
-              price: priceInCurrent
-            });
+            parsedData.push({ name: namePart, price: priceInCurrent });
             continue;
           }
         }
-
         const nextLine = lines[i + 1] || "";
         const priceInNext = extractPrice(nextLine);
         if (priceInNext && !/%|할인|이벤트/.test(currentLine) && !/\d원/.test(currentLine)) {
-          parsedData.push({
-            name: currentLine, // 원본 저장
-            price: priceInNext
-          });
+          parsedData.push({ name: currentLine, price: priceInNext });
           i++;
         }
       }
     }
-
     treatmentData = parsedData;
     document.getElementById('inputStatus').innerText = `${treatmentData.length}건 분석됨`;
     
-    const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
-                               .some(input => input.value.trim().length > 0);
-    
     if (!isEditingOutput) {
+      const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
+                                 .some(input => input.value.trim().length > 0);
       if (hasAnyKeyword) {
         performExtraction(); 
       } else {
@@ -565,7 +541,6 @@
     const useVat = document.getElementById('vatLine').checked;
     const keepParens = document.getElementById('keepParens').checked;
 
-    // 렌더링 시점에 이름을 가공 (옵션 적용)
     let finalTxt = dataList.map(item => {
       const displayName = cleanName(item.name, keepParens);
       return `${displayName} ${item.price}`;
@@ -602,8 +577,7 @@
       }
     });
 
-    // 검색 시에는 DB와 현재 입력 데이터를 합침
-    let sourceData = [...CUSTOM_DATABASE, ...treatmentData];
+    let sourceData = (allKeywords.length > 0) ? [...CUSTOM_DATABASE, ...treatmentData] : [...treatmentData];
     let filtered = sourceData;
 
     if (allKeywords.length > 0) {
@@ -653,6 +627,5 @@
     document.body.removeChild(tempElem);
   }
 </script>
-
 </body>
 </html>
