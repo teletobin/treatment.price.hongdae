@@ -60,20 +60,20 @@
 
     .main-wrapper {
       flex: 1;
-      max-width: 1200px; /* 전체 너비 소폭 확장 */
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 20px;
       width: 100%;
     }
 
     .grid-container {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
       width: 100%;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 600px) {
       .grid-container {
         grid-template-columns: 1fr;
       }
@@ -87,7 +87,7 @@
       display: flex;
       flex-direction: column;
       border: 1px solid var(--border);
-      min-height: 850px; /* 박스 길이를 650px -> 850px로 대폭 늘림 */
+      min-height: 850px; 
     }
 
     .section-title {
@@ -116,7 +116,7 @@
 
     textarea {
       width: 100%;
-      flex: 1; /* 남은 공간을 꽉 채우도록 설정 */
+      flex: 1; 
       padding: 18px;
       border-radius: 14px;
       border: 1px solid var(--border);
@@ -144,14 +144,14 @@
 
     .search-inputs-row, .exclude-inputs-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
     }
 
     .input-group {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px; 
+      gap: 6px; 
       flex: 1;
     }
 
@@ -160,13 +160,13 @@
       font-weight: 800;
       color: var(--text); 
       white-space: nowrap;
-      width: 50px; 
+      width: 45px; 
       text-align: center;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 10px 12px;
+      padding: 10px 8px;
       border-radius: 10px;
       border: 1px solid var(--border);
       font-size: 13px;
@@ -205,13 +205,13 @@
     .btn-action {
       background: var(--primary);
       color: white;
-      padding: 10px 20px;
+      padding: 10px 15px;
       border-radius: 10px;
       font-size: 13px;
       height: 39px; 
       box-shadow: 0 4px 10px rgba(240, 98, 146, 0.2);
       white-space: nowrap;
-      min-width: 60px;
+      min-width: 55px;
     }
 
     .btn-action:hover {
@@ -389,7 +389,6 @@
       </div>
 
       <div class="search-grid">
-        <!-- Search Keywords Row -->
         <div class="search-inputs-row">
           <div class="label-tag">검색어</div>
           <div class="input-group">
@@ -400,7 +399,6 @@
           <button class="btn btn-action" onclick="performExtraction()">검색</button>
         </div>
         
-        <!-- Exclude Keywords Row -->
         <div class="exclude-inputs-row">
           <div class="label-tag">제외어</div>
           <div class="input-group">
@@ -528,7 +526,7 @@
     
     if (!isEditingOutput) {
       const hasAnyKeyword = Array.from(document.querySelectorAll('.search-input, .exclude-input'))
-                                 .some(input => input.value.trim().length > 0);
+                                     .some(input => input.value.trim().length > 0);
       if (hasAnyKeyword) {
         performExtraction(); 
       } else {
@@ -557,6 +555,7 @@
   function performExtraction() {
     const searchInputs = document.querySelectorAll('.search-input');
     const excludeInputs = document.querySelectorAll('.exclude-input');
+    const rawInputText = document.getElementById('dataInput').value.trim();
     isEditingOutput = false; 
 
     let allKeywords = [];
@@ -577,7 +576,18 @@
       }
     });
 
-    let sourceData = (allKeywords.length > 0) ? [...CUSTOM_DATABASE, ...treatmentData] : [...treatmentData];
+    // 핵심 수정 로직: 
+    // 원본 데이터(rawInputText)가 있으면 내장 DB(CUSTOM_DATABASE)를 무시하고 
+    // 입력된 데이터(treatmentData)에서만 검색합니다.
+    let sourceData = [];
+    if (rawInputText.length > 0) {
+      // 데이터가 입력된 상태면 붙여넣은 데이터만 사용
+      sourceData = [...treatmentData];
+    } else {
+      // 데이터 입력칸이 비어있으면 내장 DB 사용
+      sourceData = [...CUSTOM_DATABASE];
+    }
+
     let filtered = sourceData;
 
     if (allKeywords.length > 0) {
