@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>블리비 홍대점 시술 검색(홈페이지 연동)</title>
+  <title>홍대점 시술금액 검색(홈페이지연동)</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
   <style>
     :root {
@@ -121,7 +121,7 @@
       margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
     }
     .options-left {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     }
     .option-toggle {
       display: flex; align-items: center; gap: 5px;
@@ -219,20 +219,18 @@
 <body>
 
 <header>
-  <h1>블리비 홍대점 시술 검색</h1>
+  <h1>홍대점 시술 검색(홈페이지 연동)</h1>
 </header>
 
 <div class="container">
-  <!-- 검색 -->
   <div class="search-section">
-    <!-- 연동 : 업데이트 텍스트 검색창 바로 위 좌측 정렬 -->
     <div class="search-top-info">
       <span id="syncInfo"></span>
       <button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button>
     </div>
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="searchInput" placeholder="시술명 검색 (예: 슈링크 한정가, 보톡스)" oninput="doSearch()" autofocus>
+      <input type="text" id="searchInput" placeholder="시술명 검색 (예: 슈링크 한정가, 스킨보톡스)" oninput="doSearch()" autofocus>
     </div>
     <div class="exclude-section">
       <div class="exclude-label">제외</div>
@@ -244,12 +242,15 @@
     </div>
   </div>
 
-  <!-- 옵션 + 상태 -->
   <div class="options-bar">
     <div class="options-left">
       <label class="option-toggle">
         <input type="checkbox" id="keepParens" checked onchange="doSearch()">
         <span>괄호 속 텍스트 유지</span>
+      </label>
+      <label class="option-toggle">
+        <input type="checkbox" id="removeOptionPrefix" checked onchange="doSearch()">
+        <span>옵션)시술제외</span>
       </label>
       <label class="option-toggle">
         <input type="checkbox" id="vatLine" checked onchange="doSearch()">
@@ -261,9 +262,8 @@
     </div>
   </div>
 
-  <!-- 결과 -->
   <div id="resultArea" class="result-area">
-    <div class="result-placeholder">상단에 시술명을 입력하세요</div>
+    <div class="result-placeholder">검색어를 입력하세요</div>
   </div>
 
 </div>
@@ -295,8 +295,9 @@
     { name: "블리비V주사 3회", price: "250,000원" },
     { name: "블리비V주사 3개월 책임제", price: "600,000원" },
     { name: "코 조각주사 1회", price: "50,000원" },
-    { name: "코 조각주사 3회", price: "99,000원" }
-      ];
+    { name: "코 조각주사 3회", price: "99,000원" },
+    { name: "주름필러 1cc", price: "350,000원" }
+  ];
 
   var allTreatments = [];
 
@@ -389,6 +390,7 @@
   function doSearch() {
     var raw = document.getElementById('searchInput').value.trim();
     var keepParens = document.getElementById('keepParens').checked;
+    var removeOptionPrefix = document.getElementById('removeOptionPrefix').checked;
     var useVat = document.getElementById('vatLine').checked;
     var area = document.getElementById('resultArea');
     var copyBtn = document.getElementById('copyBtn');
@@ -447,7 +449,7 @@
 
     // 결과 텍스트 생성
     var lines = matched.map(function(item) {
-      var displayName = cleanName(item.name, keepParens);
+      var displayName = cleanName(item.name, keepParens, removeOptionPrefix);
       return displayName + ' ' + item.price;
     });
 
@@ -461,8 +463,11 @@
   }
 
   // 유틸
-  function cleanName(name, keepParens) {
+  function cleanName(name, keepParens, removeOptionPrefix) {
     var n = name;
+    if (removeOptionPrefix) {
+      n = n.replace(/^옵션\d+\)\s*/i, "");
+    }
     if (!keepParens) {
       n = n.replace(/\([^)]*\)/g, "");
       n = n.replace(/\[[^\]]*\]/g, "");
