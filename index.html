@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>블리비 홍대점 시술 검색</title>
+  <title>홍대점 시술굼액 검색(홈페이지연동)</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
   <style>
     :root {
@@ -54,6 +54,18 @@
     .search-section {
       margin-bottom: 16px;
     }
+
+    /* 검색창 상단 연동/업데이트 정보 표시 */
+    .search-top-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #bbb;
+      font-weight: 500;
+    }
+
     .search-box {
       position: relative;
       margin-bottom: 10px;
@@ -121,15 +133,12 @@
       width: 13px; height: 13px; margin: 0;
     }
     .options-right {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 6px;
     }
     .count-badge {
       font-size: 11px; font-weight: 700; color: var(--primary-dark);
       background: var(--primary-light);
       padding: 2px 10px; border-radius: 20px;
-    }
-    .sync-info {
-      font-size: 11px; color: #bbb; font-weight: 500;
     }
     .btn-sync {
       border: none; cursor: pointer;
@@ -139,14 +148,6 @@
     }
     .btn-sync:hover { color: #ad1457; }
     .btn-sync:disabled { color: #ccc; cursor: wait; }
-    .header-sync {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-left: 6px; vertical-align: middle;
-      font-size: 10px; font-weight: 500;
-    }
-    .header-sync #syncInfo {
-      font-size: 10px; color: #bbb; font-weight: 500;
-    }
 
     /* ── 결과 텍스트 영역 ── */
     .result-area {
@@ -176,27 +177,17 @@
       border-radius: 14px;
     }
 
-    /* ── 하단 복사 바 ── */
-    .copy-bar {
-      margin-top: 14px;
-      display: flex; align-items: center; justify-content: flex-end;
-      gap: 12px;
-    }
-    .copy-bar.hidden { display: none; }
     .btn-copy {
       border: none; cursor: pointer;
       background: var(--primary-dark); color: white;
-      padding: 5px 11px; border-radius: 50px;
+      padding: 3px 10px; border-radius: 50px;
       font-size: 11px; font-weight: 700;
-      box-shadow: 0 4px 12px rgba(216, 27, 96, 0.2);
+      box-shadow: 0 2px 6px rgba(216, 27, 96, 0.2);
       transition: all 0.2s;
       white-space: nowrap;
     }
     .btn-copy.hidden { display: none; }
-    .btn-copy:hover { background: #ad1457; transform: translateY(-1px); }
-    .copy-info {
-      font-size: 12px; color: var(--text-sub); font-weight: 500;
-    }
+    .btn-copy:hover { background: #ad1457; }
 
     /* ── 로딩 ── */
     .loading-box {
@@ -233,15 +224,18 @@
 <body>
 
 <header>
-  <h1>블리비 홍대점 시술 검색 <span class="header-sync"><span id="syncInfo"></span><button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button></span></h1>
+  <h1>블리비 홍대점 시술 검색</h1>
 </header>
 
 <div class="container">
-  <!-- 검색 -->
   <div class="search-section">
+    <div class="search-top-info">
+      <span id="syncInfo"></span>
+      <button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button>
+    </div>
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="searchInput" placeholder="시술명 검색 (예: 슈링크 한정가, 스킨보톡스 얼굴전체)" oninput="doSearch()" autofocus>
+      <input type="text" id="searchInput" placeholder="시술명 검색 (예: 슈링크 한정가, 보톡스)" oninput="doSearch()" autofocus>
     </div>
     <div class="exclude-section">
       <div class="exclude-label">제외</div>
@@ -253,12 +247,11 @@
     </div>
   </div>
 
-  <!-- 옵션 + 상태 -->
   <div class="options-bar">
     <div class="options-left">
       <label class="option-toggle">
         <input type="checkbox" id="keepParens" checked onchange="doSearch()">
-        <span>괄호 속 텍스트 유지</span>
+        <span>괄호 유지</span>
       </label>
       <label class="option-toggle">
         <input type="checkbox" id="vatLine" checked onchange="doSearch()">
@@ -271,7 +264,6 @@
     </div>
   </div>
 
-  <!-- 결과 -->
   <div id="resultArea" class="result-area">
     <div class="result-placeholder">검색어를 입력하세요</div>
   </div>
@@ -311,48 +303,7 @@
 
   var allTreatments = [];
 
-  // ══════════════════════════════════════
-  // 토큰 기반 매칭 (자동차팅 로직 참고)
-  // ══════════════════════════════════════
-
-  // 문자열 → 토큰 배열: 한글/영문/숫자 단위로 쪼갬
-  function tokenize(str) {
-    return str.toLowerCase().replace(/[^\uAC00-\uD7AF\u3131-\u318Ea-z0-9]/gi, ' ')
-              .split(/\s+/).filter(function(t) { return t.length > 0; });
-  }
-
-  // 두 토큰이 매칭되는지 판정
-  // 띄어쓰기는 무시하고, 검색어가 시술명에 포함될 때만 매칭
-  function tokensMatch(query, name) {
-    var q = query.toLowerCase().replace(/\s+/g, '');
-    var n = name.toLowerCase().replace(/\s+/g, '');
-
-    if (/^\d+$/.test(q) || /^\d+$/.test(n)) return q === n;
-    if (q.length <= 2 || n.length <= 2) return q === n;
-
-    return n.indexOf(q) !== -1;
-  }
-
-  // 시술 하나가 검색 토큰들에 매칭되는지 + 점수 계산
-  // 모든 검색 토큰이 시술명 토큰 중 하나 이상과 매칭되어야 함 (AND)
-  function scoreItem(queryTokens, nameTokens) {
-    var query = queryTokens.join('');
-    var name = nameTokens.join('');
-
-    var normalizedQuery = query.toLowerCase().replace(/\s+/g, '');
-    var normalizedName = name.toLowerCase().replace(/\s+/g, '');
-
-    if (normalizedName.indexOf(normalizedQuery) === -1) return null;
-
-    return {
-      matchedChars: normalizedQuery.length,
-      score: normalizedQuery.length / normalizedName.length
-    };
-  }
-
-  // ══════════════════════════════════════
   // 초기화
-  // ══════════════════════════════════════
   function init() {
     var cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
@@ -377,15 +328,9 @@
       map.set(item.name.replace(/\s+/g,"").toLowerCase(), item);
     });
     allTreatments = Array.from(map.values());
-    // 토큰 미리 계산
-    allTreatments.forEach(function(item) {
-      item._tokens = tokenize(item.name);
-    });
   }
 
-  // ══════════════════════════════════════
   // 홈페이지 연동
-  // ══════════════════════════════════════
   async function syncFromHomepage() {
     var btn = document.getElementById('syncBtn');
     var area = document.getElementById('resultArea');
@@ -443,9 +388,7 @@
     if (day >= 14) info.textContent += ' ⚠️';
   }
 
-  // ══════════════════════════════════════
   // 검색
-  // ══════════════════════════════════════
   function doSearch() {
     var raw = document.getElementById('searchInput').value.trim();
     var keepParens = document.getElementById('keepParens').checked;
@@ -475,41 +418,29 @@
     // 콤마로 구분 → OR 그룹
     var orGroups = raw.split(',').map(function(g) { return g.trim(); }).filter(function(g) { return g.length > 0; });
 
-    // 각 OR 그룹을 토큰화 → 그룹 내 토큰은 AND 조건
     var matched = [];
 
     allTreatments.forEach(function(item) {
-      var nameTokens = item._tokens;
-      if (!nameTokens || nameTokens.length === 0) return;
+      var nameLower = item.name.replace(/\s+/g, "").toLowerCase();
 
       // 제외 체크
       if (excludeTokens.length > 0) {
-        var nameLower = item.name.replace(/\s+/g,"").toLowerCase();
         var excluded = excludeTokens.some(function(ex) { return nameLower.indexOf(ex) !== -1; });
         if (excluded) return;
       }
 
-      var bestScore = null;
+      // OR 그룹 중 하나라도 조건 만족하는지 판정
+      var isMatched = orGroups.some(function(group) {
+        // 공백으로 단어 분할 → 단어별 AND 조건
+        var keywords = group.split(/\s+/).filter(function(k) { return k.length > 0; });
+        return keywords.every(function(kw) {
+          return nameLower.indexOf(kw.toLowerCase()) !== -1;
+        });
+      });
 
-      for (var g = 0; g < orGroups.length; g++) {
-        var qTokens = tokenize(orGroups[g]);
-        if (qTokens.length === 0) continue;
-
-        var result = scoreItem(qTokens, nameTokens);
-        if (result && (!bestScore || result.matchedChars > bestScore.matchedChars ||
-            (result.matchedChars === bestScore.matchedChars && result.score > bestScore.score))) {
-          bestScore = result;
-        }
+      if (isMatched) {
+        matched.push(item);
       }
-
-      if (bestScore) {
-        matched.push({ item: item, matchedChars: bestScore.matchedChars, score: bestScore.score });
-      }
-    });
-
-    // 매칭 글자수 → 점수 순 정렬
-    matched.sort(function(a, b) {
-      return b.matchedChars - a.matchedChars || b.score - a.score;
     });
 
     document.getElementById('resultCount').textContent = matched.length + '건';
@@ -521,9 +452,9 @@
     }
 
     // 결과 텍스트 생성
-    var lines = matched.map(function(m) {
-      var displayName = cleanName(m.item.name, keepParens);
-      return displayName + ' ' + m.item.price;
+    var lines = matched.map(function(item) {
+      var displayName = cleanName(item.name, keepParens);
+      return displayName + ' ' + item.price;
     });
 
     var text = lines.join('\n');
@@ -532,11 +463,10 @@
     }
 
     area.innerHTML = '<textarea class="result-box" id="resultBox">' + escapeHtml(text) + '</textarea>';
-
     copyBtn.classList.remove('hidden');
   }
 
-  // ── 유틸 ──
+  // 유틸
   function cleanName(name, keepParens) {
     var n = name;
     if (!keepParens) {
