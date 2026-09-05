@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>홍대점 시술굼액 검색(홈페이지연동)</title>
+  <title>블리비 홍대점 시술 검색(홈페이지 연동)</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
   <style>
     :root {
@@ -97,7 +97,7 @@
       margin-bottom: 12px;
     }
     .exclude-label {
-      font-size: 12px; font-weight: 700; color: var(--text-sub);
+      font-size: 13px; font-weight: 700; color: var(--text-sub);
       white-space: nowrap; width: 32px; text-align: center;
     }
     .exclude-inputs {
@@ -121,24 +121,19 @@
       margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
     }
     .options-left {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 12px;
     }
     .option-toggle {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 12px; font-weight: 600; color: var(--text-sub);
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 600; color: var(--text-sub);
       cursor: pointer; user-select: none;
     }
     .option-toggle input {
       accent-color: var(--primary);
-      width: 13px; height: 13px; margin: 0;
+      width: 14px; height: 14px; margin: 0;
     }
     .options-right {
-      display: flex; align-items: center; gap: 6px;
-    }
-    .count-badge {
-      font-size: 11px; font-weight: 700; color: var(--primary-dark);
-      background: var(--primary-light);
-      padding: 2px 10px; border-radius: 20px;
+      display: flex; align-items: center;
     }
     .btn-sync {
       border: none; cursor: pointer;
@@ -180,8 +175,8 @@
     .btn-copy {
       border: none; cursor: pointer;
       background: var(--primary-dark); color: white;
-      padding: 3px 10px; border-radius: 50px;
-      font-size: 11px; font-weight: 700;
+      padding: 6px 14px; border-radius: 50px;
+      font-size: 13px; font-weight: 700;
       box-shadow: 0 2px 6px rgba(216, 27, 96, 0.2);
       transition: all 0.2s;
       white-space: nowrap;
@@ -228,7 +223,9 @@
 </header>
 
 <div class="container">
+  <!-- 검색 -->
   <div class="search-section">
+    <!-- 연동 : 업데이트 텍스트 검색창 바로 위 좌측 정렬 -->
     <div class="search-top-info">
       <span id="syncInfo"></span>
       <button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button>
@@ -247,11 +244,12 @@
     </div>
   </div>
 
+  <!-- 옵션 + 상태 -->
   <div class="options-bar">
     <div class="options-left">
       <label class="option-toggle">
         <input type="checkbox" id="keepParens" checked onchange="doSearch()">
-        <span>괄호 유지</span>
+        <span>괄호 속 텍스트 유지</span>
       </label>
       <label class="option-toggle">
         <input type="checkbox" id="vatLine" checked onchange="doSearch()">
@@ -259,13 +257,13 @@
       </label>
     </div>
     <div class="options-right">
-      <span id="resultCount" class="count-badge">0건</span>
-      <button id="copyBtn" class="btn-copy hidden" onclick="copyResults()">텍스트 복사</button>
+      <button id="copyBtn" class="btn-copy hidden" onclick="copyResults()">결과 복사</button>
     </div>
   </div>
 
+  <!-- 결과 -->
   <div id="resultArea" class="result-area">
-    <div class="result-placeholder">검색어를 입력하세요</div>
+    <div class="result-placeholder">상단에 시술명을 입력하세요</div>
   </div>
 
 </div>
@@ -297,9 +295,8 @@
     { name: "블리비V주사 3회", price: "250,000원" },
     { name: "블리비V주사 3개월 책임제", price: "600,000원" },
     { name: "코 조각주사 1회", price: "50,000원" },
-    { name: "코 조각주사 3회", price: "99,000원" },
-    { name: "주름필러 1cc", price: "350,000원" }
-  ];
+    { name: "코 조각주사 3회", price: "99,000원" }
+      ];
 
   var allTreatments = [];
 
@@ -409,7 +406,6 @@
     });
 
     if (!raw) {
-      document.getElementById('resultCount').textContent = allTreatments.length + '건 보유';
       area.innerHTML = '<div class="result-placeholder">검색어를 입력하세요</div>';
       copyBtn.classList.add('hidden');
       return;
@@ -442,8 +438,6 @@
         matched.push(item);
       }
     });
-
-    document.getElementById('resultCount').textContent = matched.length + '건';
 
     if (matched.length === 0) {
       area.innerHTML = '<div class="result-placeholder">검색 결과가 없습니다</div>';
