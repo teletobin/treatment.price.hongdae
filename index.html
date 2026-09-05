@@ -13,7 +13,6 @@
       --text: #424242;
       --text-sub: #757575;
       --border: rgba(240, 98, 146, 0.2);
-      --radius: 14px;
     }
 
     * {
@@ -30,7 +29,6 @@
       display: flex; flex-direction: column;
     }
 
-    /* ── 헤더 ── */
     header {
       padding: 14px 20px;
       text-align: center;
@@ -43,16 +41,19 @@
       letter-spacing: -0.5px;
     }
 
-    /* ── 메인 ── */
     .container {
       max-width: 720px;
       margin: 0 auto;
       padding: 24px 20px;
       width: 100%;
       flex: 1;
+      display: flex; flex-direction: column;
     }
 
     /* ── 검색 영역 ── */
+    .search-section {
+      margin-bottom: 16px;
+    }
     .search-box {
       position: relative;
       margin-bottom: 10px;
@@ -79,60 +80,37 @@
       color: #bbb; pointer-events: none;
     }
 
-    /* 제외 키워드 (토글) */
-    .exclude-row {
+    .exclude-section {
       display: flex; align-items: center; gap: 8px;
-      margin-bottom: 16px; padding: 0 6px;
+      margin-bottom: 12px;
     }
-    .exclude-row label {
+    .exclude-label {
       font-size: 12px; font-weight: 700; color: var(--text-sub);
-      white-space: nowrap;
+      white-space: nowrap; width: 32px; text-align: center;
     }
-    .exclude-row input {
-      flex: 1; padding: 8px 14px;
+    .exclude-inputs {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 6px; flex: 1;
+    }
+    .exclude-inputs input {
+      width: 100%; padding: 8px 12px;
       border-radius: 50px;
       border: 1px solid #e0e0e0;
-      font-size: 13px; font-weight: 500;
+      font-size: 12px; font-weight: 500;
       outline: none; background: #fafafa;
     }
-    .exclude-row input:focus {
+    .exclude-inputs input:focus {
       border-color: #bbb; background: #fff;
     }
 
-    /* ── 상태 바 ── */
-    .status-bar {
+    /* ── 옵션 + 상태 바 ── */
+    .options-bar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 6px; margin-bottom: 14px;
-      flex-wrap: wrap; gap: 6px;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
     }
-    .status-left {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: var(--text-sub); font-weight: 500;
+    .options-left {
+      display: flex; align-items: center; gap: 10px;
     }
-    .status-left .count {
-      font-weight: 700; color: var(--primary-dark);
-      background: var(--primary-light);
-      padding: 2px 10px; border-radius: 20px;
-      font-size: 11px;
-    }
-    .status-left .sync-info {
-      color: #bbb; font-size: 11px;
-    }
-    .btn-sync {
-      border: none; cursor: pointer;
-      background: none; color: var(--primary-dark);
-      font-size: 11px; font-weight: 700;
-      text-decoration: underline;
-      padding: 0;
-    }
-    .btn-sync:hover { color: #ad1457; }
-    .btn-sync:disabled { color: #ccc; cursor: wait; }
-
-    .status-right {
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    /* ── 옵션 토글 ── */
     .option-toggle {
       display: flex; align-items: center; gap: 4px;
       font-size: 11px; font-weight: 600; color: var(--text-sub);
@@ -142,44 +120,59 @@
       accent-color: var(--primary);
       width: 13px; height: 13px; margin: 0;
     }
+    .options-right {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .count-badge {
+      font-size: 11px; font-weight: 700; color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 2px 10px; border-radius: 20px;
+    }
+    .sync-info {
+      font-size: 11px; color: #bbb; font-weight: 500;
+    }
+    .btn-sync {
+      border: none; cursor: pointer;
+      background: none; color: var(--primary-dark);
+      font-size: 11px; font-weight: 700;
+      text-decoration: underline; padding: 0;
+    }
+    .btn-sync:hover { color: #ad1457; }
+    .btn-sync:disabled { color: #ccc; cursor: wait; }
 
-    /* ── 결과 리스트 ── */
-    .results {
-      display: flex; flex-direction: column;
+    /* ── 결과 텍스트 영역 ── */
+    .result-area {
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 300px;
     }
-    .result-item {
-      display: flex; justify-content: space-between; align-items: baseline;
-      padding: 12px 14px;
-      border-bottom: 1px solid #f5f5f5;
-      gap: 12px;
-      transition: background 0.15s;
+    .result-box {
+      flex: 1; width: 100%;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      font-size: 14px; line-height: 1.8;
+      resize: none; outline: none;
+      background: #fffafa;
+      color: var(--text);
+      transition: border-color 0.2s;
     }
-    .result-item:hover { background: #fffafa; }
-    .result-name {
-      font-size: 14px; font-weight: 500;
-      line-height: 1.5; flex: 1; min-width: 0;
-      word-break: keep-all;
+    .result-box:focus {
+      border-color: var(--primary);
+      background: #fff;
     }
-    .result-price {
-      font-size: 14px; font-weight: 700;
-      color: var(--primary-dark);
-      white-space: nowrap; flex-shrink: 0;
-    }
-
-    .no-results {
-      text-align: center; padding: 48px 0;
+    .result-placeholder {
+      flex: 1; display: flex; align-items: center; justify-content: center;
       color: #ccc; font-size: 14px; font-weight: 500;
+      min-height: 300px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
     }
 
     /* ── 하단 복사 바 ── */
     .copy-bar {
-      position: sticky; bottom: 0;
-      background: #fff;
-      border-top: 1px solid #f0f0f0;
-      padding: 12px 20px;
-      display: flex; align-items: center; justify-content: center;
+      margin-top: 14px;
+      display: flex; align-items: center; justify-content: flex-end;
       gap: 12px;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
     }
     .copy-bar.hidden { display: none; }
     .btn-copy {
@@ -196,24 +189,24 @@
     }
 
     /* ── 로딩 ── */
-    .loading-overlay {
-      text-align: center; padding: 60px 0;
-      color: var(--primary-dark); font-size: 14px; font-weight: 600;
+    .loading-box {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 300px; color: var(--primary-dark);
+      font-size: 14px; font-weight: 600; gap: 12px;
     }
-    .loading-overlay .spinner {
-      display: inline-block;
+    .spinner {
       width: 24px; height: 24px;
       border: 3px solid var(--primary-light);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-bottom: 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── 토스트 ── */
     #toast {
-      position: fixed; bottom: 80px; left: 50%;
+      position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: #333; color: white; padding: 10px 24px;
       border-radius: 50px; font-size: 13px;
@@ -234,51 +227,54 @@
 </header>
 
 <div class="container">
-  <!-- 검색창 -->
-  <div class="search-box">
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="searchInput" placeholder="시술명 검색 (예: 써마지, 슈링크, 보톡스)" oninput="doSearch()" autofocus>
-  </div>
-
-  <!-- 제외 키워드 -->
-  <div class="exclude-row">
-    <label>제외</label>
-    <input type="text" id="excludeInput" placeholder="제외할 키워드 (콤마로 구분)" oninput="doSearch()">
-  </div>
-
-  <!-- 상태 바 -->
-  <div class="status-bar">
-    <div class="status-left">
-      <span id="resultCount" class="count">0건</span>
-      <span id="syncInfo" class="sync-info"></span>
-      <button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button>
+  <!-- 검색 -->
+  <div class="search-section">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="시술명 검색 (예: 슈링크 한정가, 보톡스)" oninput="doSearch()" autofocus>
     </div>
-    <div class="status-right">
+    <div class="exclude-section">
+      <div class="exclude-label">제외</div>
+      <div class="exclude-inputs">
+        <input type="text" class="exclude-field" placeholder="제외 1" oninput="doSearch()">
+        <input type="text" class="exclude-field" placeholder="제외 2" oninput="doSearch()">
+        <input type="text" class="exclude-field" placeholder="제외 3" oninput="doSearch()">
+      </div>
+    </div>
+  </div>
+
+  <!-- 옵션 + 상태 -->
+  <div class="options-bar">
+    <div class="options-left">
       <label class="option-toggle">
         <input type="checkbox" id="keepParens" checked onchange="doSearch()">
         <span>괄호 유지</span>
       </label>
       <label class="option-toggle">
-        <input type="checkbox" id="vatLine" checked>
+        <input type="checkbox" id="vatLine" checked onchange="doSearch()">
         <span>부가세 안내</span>
       </label>
     </div>
+    <div class="options-right">
+      <span id="resultCount" class="count-badge">0건</span>
+      <span id="syncInfo" class="sync-info"></span>
+      <button id="syncBtn" class="btn-sync" onclick="syncFromHomepage()">업데이트</button>
+    </div>
   </div>
 
-  <!-- 결과 영역 -->
-  <div id="resultsArea" class="results">
-    <div class="no-results">검색어를 입력하세요</div>
+  <!-- 결과 -->
+  <div id="resultArea" class="result-area">
+    <div class="result-placeholder">검색어를 입력하세요</div>
   </div>
-</div>
 
-<!-- 복사 바 -->
-<div id="copyBar" class="copy-bar hidden">
-  <span class="copy-info" id="copyInfo"></span>
-  <button class="btn-copy" onclick="copyResults()">텍스트 복사</button>
+  <!-- 복사 -->
+  <div id="copyBar" class="copy-bar hidden">
+    <span class="copy-info" id="copyInfo"></span>
+    <button class="btn-copy" onclick="copyResults()">텍스트 복사</button>
+  </div>
 </div>
 
 <footer>&copy; 2026. Designed & Developed by EUNBIN GA</footer>
-
 <div id="toast">복사 완료!</div>
 
 <script>
@@ -309,58 +305,104 @@
     { name: "주름필러 1cc", price: "350,000원" }
   ];
 
-  // 모든 시술 데이터 (홈페이지 + CUSTOM)
   var allTreatments = [];
-  // 현재 화면에 표시된 필터 결과
-  var currentResults = [];
 
-  // ── 초기화 ──
+  // ══════════════════════════════════════
+  // 토큰 기반 매칭 (자동차팅 로직 참고)
+  // ══════════════════════════════════════
+
+  // 문자열 → 토큰 배열: 한글/영문/숫자 단위로 쪼갬
+  function tokenize(str) {
+    return str.toLowerCase().replace(/[^\uAC00-\uD7AF\u3131-\u318Ea-z0-9]/gi, ' ')
+              .split(/\s+/).filter(function(t) { return t.length > 0; });
+  }
+
+  // 두 토큰이 매칭되는지 판정
+  // - 숫자 토큰: 정확히 같아야 함 ("100" ≠ "1000")
+  // - 2자 이하: 정확히 같아야 함 ("FX" = "fx", but "모" ≠ "인모드")
+  // - 3자 이상: 부분 포함이면 OK ("슈링크" ⊂ "슈링크유니버스")
+  function tokensMatch(query, name) {
+    var q = query.toLowerCase();
+    var n = name.toLowerCase();
+    if (/^\d+$/.test(q) || /^\d+$/.test(n)) return q === n;
+    if (q.length <= 2 || n.length <= 2) return q === n;
+    var shorter = q.length <= n.length ? q : n;
+    var longer  = q.length <= n.length ? n : q;
+    return longer.indexOf(shorter) !== -1;
+  }
+
+  // 시술 하나가 검색 토큰들에 매칭되는지 + 점수 계산
+  // 모든 검색 토큰이 시술명 토큰 중 하나 이상과 매칭되어야 함 (AND)
+  function scoreItem(queryTokens, nameTokens) {
+    var matchedChars = 0;
+    var matchedCount = 0;
+
+    for (var i = 0; i < queryTokens.length; i++) {
+      var q = queryTokens[i];
+      var found = false;
+      for (var j = 0; j < nameTokens.length; j++) {
+        if (tokensMatch(q, nameTokens[j])) {
+          matchedChars += Math.min(q.length, nameTokens[j].length);
+          matchedCount++;
+          found = true;
+          break;
+        }
+      }
+      if (!found) return null; // 하나라도 못 찾으면 탈락
+    }
+
+    var coverage  = matchedCount / queryTokens.length;
+    var precision = matchedCount / nameTokens.length;
+    var score = coverage * 0.7 + precision * 0.3;
+
+    return { matchedChars: matchedChars, score: score };
+  }
+
+  // ══════════════════════════════════════
+  // 초기화
+  // ══════════════════════════════════════
   function init() {
-    // 캐시된 데이터가 있으면 즉시 로드
     var cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
-        var parsed = JSON.parse(cached);
-        mergeTreatments(parsed);
+        mergeTreatments(JSON.parse(cached));
         updateSyncInfo();
       } catch(e) {
-        // 캐시 손상 → 새로 가져오기
         syncFromHomepage();
         return;
       }
     } else {
-      // 첫 방문 → 자동으로 가져오기
       syncFromHomepage();
-      return;
     }
   }
 
-  // ── 홈페이지 + CUSTOM 병합 ──
   function mergeTreatments(homepageData) {
     var map = new Map();
-    // CUSTOM 먼저
     CUSTOM_DATABASE.forEach(function(item) {
       map.set(item.name.replace(/\s+/g,"").toLowerCase(), item);
     });
-    // 홈페이지 데이터로 덮어쓰기
     homepageData.forEach(function(item) {
       map.set(item.name.replace(/\s+/g,"").toLowerCase(), item);
     });
     allTreatments = Array.from(map.values());
+    // 토큰 미리 계산
+    allTreatments.forEach(function(item) {
+      item._tokens = tokenize(item.name);
+    });
   }
 
-  // ── 동기화 (홈페이지에서 가져오기) ──
+  // ══════════════════════════════════════
+  // 홈페이지 연동
+  // ══════════════════════════════════════
   async function syncFromHomepage() {
     var btn = document.getElementById('syncBtn');
-    var info = document.getElementById('syncInfo');
-    var area = document.getElementById('resultsArea');
+    var area = document.getElementById('resultArea');
 
     btn.disabled = true;
     btn.textContent = '연동 중...';
 
-    // 캐시 없는 첫 방문이면 로딩 표시
     if (allTreatments.length === 0) {
-      area.innerHTML = '<div class="loading-overlay"><div class="spinner"></div><br>홍대점 시술 데이터를 가져오고 있습니다...</div>';
+      area.innerHTML = '<div class="loading-box"><div class="spinner"></div>홍대점 시술 데이터를 가져오고 있습니다...</div>';
     }
 
     try {
@@ -369,32 +411,23 @@
       var data = await res.json();
 
       if (data.error) {
-        info.textContent = '연동 실패';
-        info.style.color = '#c62828';
-        // 캐시라도 있으면 그거 쓰기
         if (allTreatments.length === 0) {
-          area.innerHTML = '<div class="no-results">데이터를 가져오지 못했습니다. 다시 시도해주세요.</div>';
+          area.innerHTML = '<div class="result-placeholder">데이터를 가져오지 못했습니다. 다시 시도해주세요.</div>';
         }
         return;
       }
 
       var treatments = data.treatments || [];
-
-      // 캐시에 저장
       localStorage.setItem(CACHE_KEY, JSON.stringify(treatments));
       localStorage.setItem(CACHE_TIME_KEY, new Date().toISOString());
 
       mergeTreatments(treatments);
       updateSyncInfo();
-
-      // 검색어가 있으면 다시 검색, 없으면 안내 메시지
       doSearch();
 
     } catch (e) {
-      info.textContent = '네트워크 오류';
-      info.style.color = '#c62828';
       if (allTreatments.length === 0) {
-        area.innerHTML = '<div class="no-results">네트워크 오류. 다시 시도해주세요.</div>';
+        area.innerHTML = '<div class="result-placeholder">네트워크 오류. 다시 시도해주세요.</div>';
       }
     } finally {
       btn.disabled = false;
@@ -402,112 +435,117 @@
     }
   }
 
-  // ── 마지막 연동 시간 표시 ──
   function updateSyncInfo() {
     var info = document.getElementById('syncInfo');
     var timeStr = localStorage.getItem(CACHE_TIME_KEY);
     if (!timeStr) { info.textContent = ''; return; }
 
-    var syncDate = new Date(timeStr);
-    var now = new Date();
-    var diffMs = now - syncDate;
-    var diffMin = Math.floor(diffMs / 60000);
-    var diffHour = Math.floor(diffMs / 3600000);
-    var diffDay = Math.floor(diffMs / 86400000);
+    var diff = Date.now() - new Date(timeStr).getTime();
+    var min = Math.floor(diff / 60000);
+    var hr  = Math.floor(diff / 3600000);
+    var day = Math.floor(diff / 86400000);
 
-    var ago;
-    if (diffMin < 1) ago = '방금';
-    else if (diffMin < 60) ago = diffMin + '분 전';
-    else if (diffHour < 24) ago = diffHour + '시간 전';
-    else ago = diffDay + '일 전';
-
-    info.textContent = '마지막 연동: ' + ago;
-    info.style.color = '#bbb';
-
-    // 14일 이상이면 노란 경고
-    if (diffDay >= 14) {
-      info.style.color = '#e65100';
-      info.textContent += ' (업데이트 권장)';
-    }
+    var ago = min < 1 ? '방금' : min < 60 ? min + '분 전' : hr < 24 ? hr + '시간 전' : day + '일 전';
+    info.textContent = '연동: ' + ago;
+    info.style.color = day >= 14 ? '#e65100' : '#bbb';
+    if (day >= 14) info.textContent += ' ⚠️';
   }
 
-  // ── 검색 ──
+  // ══════════════════════════════════════
+  // 검색
+  // ══════════════════════════════════════
   function doSearch() {
     var raw = document.getElementById('searchInput').value.trim();
-    var excludeRaw = document.getElementById('excludeInput').value.trim();
     var keepParens = document.getElementById('keepParens').checked;
-    var area = document.getElementById('resultsArea');
+    var useVat = document.getElementById('vatLine').checked;
+    var area = document.getElementById('resultArea');
     var copyBar = document.getElementById('copyBar');
 
-    if (!raw && !excludeRaw) {
-      // 검색어 없으면 전체 데이터 수 보여주기
-      document.getElementById('resultCount').textContent = allTreatments.length + '건 보유';
-      area.innerHTML = '<div class="no-results">검색어를 입력하세요</div>';
-      copyBar.classList.add('hidden');
-      currentResults = [];
-      return;
-    }
-
-    // 포함 키워드 파싱
-    var keywords = [];
-    if (raw) {
-      raw.split(',').forEach(function(k) {
-        k = k.replace(/\s+/g,"").toLowerCase();
-        if (k) keywords.push(k);
-      });
-    }
-
-    // 제외 키워드 파싱
-    var excludeKws = [];
-    if (excludeRaw) {
-      excludeRaw.split(',').forEach(function(k) {
-        k = k.replace(/\s+/g,"").toLowerCase();
-        if (k) excludeKws.push(k);
-      });
-    }
-
-    var filtered = allTreatments;
-
-    if (keywords.length > 0) {
-      filtered = filtered.filter(function(item) {
-        var cn = item.name.replace(/\s+/g,"").toLowerCase();
-        return keywords.some(function(kw) { return cn.includes(kw); });
-      });
-    }
-
-    if (excludeKws.length > 0) {
-      filtered = filtered.filter(function(item) {
-        var cn = item.name.replace(/\s+/g,"").toLowerCase();
-        return !excludeKws.some(function(ex) { return cn.includes(ex); });
-      });
-    }
-
-    currentResults = filtered;
-    document.getElementById('resultCount').textContent = filtered.length + '건';
-
-    if (filtered.length === 0) {
-      area.innerHTML = '<div class="no-results">검색 결과가 없습니다</div>';
-      copyBar.classList.add('hidden');
-      return;
-    }
-
-    // 결과 렌더링
-    var html = '';
-    filtered.forEach(function(item) {
-      var displayName = cleanName(item.name, keepParens);
-      html += '<div class="result-item">';
-      html += '<span class="result-name">' + escapeHtml(displayName) + '</span>';
-      html += '<span class="result-price">' + escapeHtml(item.price) + '</span>';
-      html += '</div>';
+    // 제외 키워드 수집
+    var excludeTokens = [];
+    document.querySelectorAll('.exclude-field').forEach(function(input) {
+      var val = input.value.trim();
+      if (val) {
+        val.split(',').forEach(function(k) {
+          k = k.replace(/\s+/g,"").toLowerCase();
+          if (k) excludeTokens.push(k);
+        });
+      }
     });
-    area.innerHTML = html;
 
-    // 복사 바
-    document.getElementById('copyInfo').textContent = filtered.length + '개 시술 선택됨';
+    if (!raw) {
+      document.getElementById('resultCount').textContent = allTreatments.length + '건 보유';
+      area.innerHTML = '<div class="result-placeholder">검색어를 입력하세요</div>';
+      copyBar.classList.add('hidden');
+      return;
+    }
+
+    // 콤마로 구분 → OR 그룹
+    var orGroups = raw.split(',').map(function(g) { return g.trim(); }).filter(function(g) { return g.length > 0; });
+
+    // 각 OR 그룹을 토큰화 → 그룹 내 토큰은 AND 조건
+    var matched = [];
+
+    allTreatments.forEach(function(item) {
+      var nameTokens = item._tokens;
+      if (!nameTokens || nameTokens.length === 0) return;
+
+      // 제외 체크
+      if (excludeTokens.length > 0) {
+        var nameLower = item.name.replace(/\s+/g,"").toLowerCase();
+        var excluded = excludeTokens.some(function(ex) { return nameLower.indexOf(ex) !== -1; });
+        if (excluded) return;
+      }
+
+      var bestScore = null;
+
+      for (var g = 0; g < orGroups.length; g++) {
+        var qTokens = tokenize(orGroups[g]);
+        if (qTokens.length === 0) continue;
+
+        var result = scoreItem(qTokens, nameTokens);
+        if (result && (!bestScore || result.matchedChars > bestScore.matchedChars ||
+            (result.matchedChars === bestScore.matchedChars && result.score > bestScore.score))) {
+          bestScore = result;
+        }
+      }
+
+      if (bestScore) {
+        matched.push({ item: item, matchedChars: bestScore.matchedChars, score: bestScore.score });
+      }
+    });
+
+    // 매칭 글자수 → 점수 순 정렬
+    matched.sort(function(a, b) {
+      return b.matchedChars - a.matchedChars || b.score - a.score;
+    });
+
+    document.getElementById('resultCount').textContent = matched.length + '건';
+
+    if (matched.length === 0) {
+      area.innerHTML = '<div class="result-placeholder">검색 결과가 없습니다</div>';
+      copyBar.classList.add('hidden');
+      return;
+    }
+
+    // 결과 텍스트 생성
+    var lines = matched.map(function(m) {
+      var displayName = cleanName(m.item.name, keepParens);
+      return displayName + ' ' + m.item.price;
+    });
+
+    var text = lines.join('\n');
+    if (useVat) {
+      text += '\n\n부가세 10% 별도입니다 😊';
+    }
+
+    area.innerHTML = '<textarea class="result-box" id="resultBox">' + escapeHtml(text) + '</textarea>';
+
+    document.getElementById('copyInfo').textContent = matched.length + '개 시술';
     copyBar.classList.remove('hidden');
   }
 
-  // ── 이름 정리 ──
+  // ── 유틸 ──
   function cleanName(name, keepParens) {
     var n = name;
     if (!keepParens) {
@@ -521,18 +559,11 @@
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // ── 복사 ──
   function copyResults() {
-    var keepParens = document.getElementById('keepParens').checked;
-    var useVat = document.getElementById('vatLine').checked;
-
-    var text = currentResults.map(function(item) {
-      return cleanName(item.name, keepParens) + ' ' + item.price;
-    }).join('\n');
-
-    if (useVat && currentResults.length > 0) {
-      text += '\n\n부가세 10% 별도입니다 😊';
-    }
+    var box = document.getElementById('resultBox');
+    if (!box) return;
+    var text = box.value;
+    if (!text) return;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(showToast).catch(function(){ fallbackCopy(text); });
@@ -554,7 +585,6 @@
     setTimeout(function(){ toast.classList.remove('show'); }, 2000);
   }
 
-  // ── 시작 ──
   init();
 </script>
 </body>
