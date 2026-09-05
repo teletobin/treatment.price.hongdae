@@ -319,16 +319,21 @@
 
   // 두 토큰이 매칭되는지 판정
   // - 숫자 토큰: 정확히 같아야 함 ("100" ≠ "1000")
-  // - 2자 이하: 정확히 같아야 함 ("FX" = "fx", but "모" ≠ "인모드")
-  // - 3자 이상: 부분 포함이면 OK ("슈링크" ⊂ "슈링크유니버스")
+  // - 2자 이하: 정확히 같아야 함
+  // - 3자 이상: "검색어가 시술명 안에 포함"될 때만 매칭
+  //   → "슈링크" → "슈링크유니버스" : O
+  //   → "쥬베룩스킨" → "쥬베룩" : X
+  //   → "리쥬란HB" → "리쥬란" : X
   function tokensMatch(query, name) {
     var q = query.toLowerCase();
     var n = name.toLowerCase();
+
     if (/^\d+$/.test(q) || /^\d+$/.test(n)) return q === n;
     if (q.length <= 2 || n.length <= 2) return q === n;
-    var shorter = q.length <= n.length ? q : n;
-    var longer  = q.length <= n.length ? n : q;
-    return longer.indexOf(shorter) !== -1;
+
+    // 방향을 중요하게 봄:
+    // 검색어(q)가 시술명(n)의 일부인 경우에만 허용
+    return n.indexOf(q) !== -1;
   }
 
   // 시술 하나가 검색 토큰들에 매칭되는지 + 점수 계산
