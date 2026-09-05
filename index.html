@@ -316,6 +316,9 @@
     return str.toLowerCase().replace(/[^\uAC00-\uD7AF\u3131-\u318Ea-z0-9]/gi, ' ')
               .split(/\s+/).filter(function(t) { return t.length > 0; });
   }
+  function normalizeSearch(str) {
+  return str.toLowerCase().replace(/\s+/g, '');
+}
 
   // 두 토큰이 매칭되는지 판정
   // - 숫자 토큰: 정확히 같아야 함 ("100" ≠ "1000")
@@ -325,43 +328,39 @@
   //   → "쥬베룩스킨" → "쥬베룩" : X
   //   → "리쥬란HB" → "리쥬란" : X
   function tokensMatch(query, name) {
-    var q = query.toLowerCase();
-    var n = name.toLowerCase();
+  var q = normalizeSearch(query);
+  var n = normalizeSearch(name);
 
-    if (/^\d+$/.test(q) || /^\d+$/.test(n)) return q === n;
-    if (q.length <= 2 || n.length <= 2) return q === n;
-
-    // 방향을 중요하게 봄:
-    // 검색어(q)가 시술명(n)의 일부인 경우에만 허용
-    return n.indexOf(q) !== -1;
+  if (/^\d+$/.test(q) || /^\d+$/.test(n)) {
+    return q === n;
   }
+
+  if (q.length <= 2 || n.length <= 2) {
+    return q === n;
+  }
+
+  // 검색어가 시술명 안에 포함되는 경우만 허용
+  return n.indexOf(q) !== -1;
+}
 
   // 시술 하나가 검색 토큰들에 매칭되는지 + 점수 계산
   // 모든 검색 토큰이 시술명 토큰 중 하나 이상과 매칭되어야 함 (AND)
   function scoreItem(queryTokens, nameTokens) {
-    var matchedChars = 0;
-    var matchedCount = 0;
+  var query = queryTokens.join('');
+  var name = nameTokens.join('');
 
-    for (var i = 0; i < queryTokens.length; i++) {
-      var q = queryTokens[i];
-      var found = false;
-      for (var j = 0; j < nameTokens.length; j++) {
-        if (tokensMatch(q, nameTokens[j])) {
-          matchedChars += Math.min(q.length, nameTokens[j].length);
-          matchedCount++;
-          found = true;
-          break;
-        }
-      }
-      if (!found) return null; // 하나라도 못 찾으면 탈락
-    }
+  var normalizedQuery = normalizeSearch(query);
+  var normalizedName = normalizeSearch(name);
 
-    var coverage  = matchedCount / queryTokens.length;
-    var precision = matchedCount / nameTokens.length;
-    var score = coverage * 0.7 + precision * 0.3;
-
-    return { matchedChars: matchedChars, score: score };
+  if (normalizedName.indexOf(normalizedQuery) === -1) {
+    return null;
   }
+
+  return {
+    matchedChars: normalizedQuery.length,
+    score: normalizedQuery.length / normalizedName.length
+  };
+}
 
   // ══════════════════════════════════════
   // 초기화
